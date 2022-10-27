@@ -1,0 +1,126 @@
+{
+	"FILE_PATH" : null,
+	"INSTR_NUM" : 32,
+	"EXECUTION_TIME" : 100,
+	"SKIP" : false,
+	"FORCE" : false,
+	"OUTPUT_DIR" : "output",
+	"ASM_NAME" : "asm.asm",
+	"CODE_NAME" : "code.txt",
+	"RESULT_NAME" : "result.txt",
+	"TEST_PATH" : "",
+	"TEST_CIRC" : "output\\test.circ",
+	"STD_NAME" : "std.json",
+	"OUT_NAME" : "out.json",
+	"MARS_PATH" : "Mars\\Mars.jar",
+	"LOGISIM_PATH" : "Logisim\\logisim.jar",
+	"JUMP_ENBLED" : "false",
+	"COMPILER_TYPE" : "iverilog",
+	"COMPILER_ARGV" : "",
+	"FILE_MD5" : "MD5\\FILE_MD5",
+	"CODE_MD5" : "MD5\\CODE_MD5",
+	"STD_MD5" : "MD5\\STD_MD5",
+	"LAST_MD5" : "MD5\\LAST_MD5",
+	"TEST_TYPE" : "",
+	"INSTRUCTION_LIST" : [
+		{
+			"name" : "add",
+			"opcode" : "000000",
+			"funct" : "100000",
+			"RegWrite" : true,
+			"RegAddr" : ["rd"],
+			"MemWrite" : false,
+			"jump" : false,
+			"weight" : 2
+		},
+		{
+			"name" : "sub",
+			"opcode" : "000000",
+			"funct" : "100010",
+			"RegWrite" : true,
+			"RegAddr" : ["rd"],
+			"MemWrite" : false,
+			"jump" : false,
+			"weight" : 2
+		},
+		{
+			"name" : "ori",
+			"opcode" : "001101",
+			"RegWrite" : true,
+			"RegAddr" : ["rt"],
+			"MemWrite" : false,
+			"jump" : false,
+			"weight" : 2
+		},
+		{
+			"name" : "lw",
+			"opcode" : "100011",
+			"RegWrite" : true,
+			"RegAddr" : ["rt"],
+			"MemWrite" : false,
+			"jump" : false,
+			"weight" : 2
+		},
+		{
+			"name" : "sw",
+			"opcode" : "101011",
+			"RegWrite" : false,
+			"MemWrite" : true,
+			"MemAddr" : ["rt","offset"],
+			"jump" : false,
+			"weight" : 2
+		},
+		{
+			"name" : "beq",
+			"opcode" : "000100",
+			"RegWrite" : false,
+			"MemWrite" : false,
+			"jump" : true,
+			"weight" : 2
+		},
+		{
+			"name" : "lui",
+			"opcode" : "001111",
+			"RegWrite" : true,
+			"RegAddr" : ["rt"],
+			"MemWrite" : false,
+			"jump" : false,
+			"weight" : 2
+		},
+		{
+			"name" : "nop",
+			"opcode" : "000000",
+			"funct" : "000000",
+			"RegWrite" : false,
+			"MemWrite" : false,
+			"jump" : false,
+			"weight" : 1
+		},
+		{
+			"name" : "j",
+			"opcode" : "000010",
+			"RegWrite" : false,
+			"MemWrite" : false,
+			"jump" : true,
+			"weight" : 1
+		},
+		{
+			"name" : "jal",
+			"opcode" : "000011",
+			"RegWrite" : true,
+			"RegAddr" : ["pc"],
+			"MemWrite" : false,
+			"jump" : true,
+			"weight" : 1
+		},
+		{
+			"name" : "jr",
+			"opcode" : "000000",
+			"funct" : "001000",
+			"RegWrite" : false,
+			"MemWrite" : false,
+			"jump" : true,
+			"weight" : 1
+		}
+	]
+}
