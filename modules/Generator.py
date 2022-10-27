@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-26 20:19:34
 LastEditors: ltt
-LastEditTime: 2022-10-27 14:15:12
+LastEditTime: 2022-10-27 15:31:58
 FilePath: Generator.py
 '''
 import hashlib, re, json, os
@@ -233,7 +233,8 @@ def generate_out_Verilog(setting):
     test_branch = f"{os.getcwd()}\\Verilog\\testbranch.v"
     if(compiler == "iverilog"):
         (test_path, test_name) = os.path.split(test_path)
-        ret = Base.run(["cd",test_path,"&&","copy",code_path,"code.txt",
+        Base.run(["cd",test_path,"&&","copy",code_path,"code.txt"])
+        ret = Base.run(["cd",test_path,
                         "&&","iverilog",argv,"-o",temp,test_name,test_branch, 
                         "&&", "vvp", temp], errdesc="编译错误")
         match = re.findall(r"@.*\n",ret)

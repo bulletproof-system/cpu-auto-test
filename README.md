@@ -4,7 +4,7 @@
 - 主目录下有一个样例文件夹 `example`，其中的两个 `bat` 分别用于测试 `.circ` 和 `.v` 文件
 - 选择 python 原因：~~不想写 JAVA~~
 - 一人役
-- 项目地址 `https://gitee.com/luotiantian945/cpu-auto-test.git`
+- 项目地址 [https://gitee.com/LTT-Repository/cpu-auto-test.git](https://sctrack.sendcloud.net/track/click/eyJuZXRlYXNlIjogImZhbHNlIiwgIm1haWxsaXN0X2lkIjogMCwgInRhc2tfaWQiOiAiIiwgImVtYWlsX2lkIjogIjE2NjY4NTc5MTc2NTBfNDIxMjlfMTkzMDFfMzgzMy5zYy0xMF85XzE3OV8xOTctaW5ib3VuZDAkMTcyODkwMTQwOUBxcS5jb20iLCAic2lnbiI6ICIxNTBhNWI2ZWJhMWVhZTU3ZjU3NGMzYzExYzFiZmEyNCIsICJ1c2VyX2hlYWRlcnMiOiB7fSwgImxhYmVsIjogMCwgInRyYWNrX2RvbWFpbiI6ICJzY3RyYWNrLnNlbmRjbG91ZC5uZXQiLCAicmVhbF90eXBlIjogIiIsICJsaW5rIjogImh0dHBzJTNBLy9naXRlZS5jb20vTFRULVJlcG9zaXRvcnkvY3B1LWF1dG8tdGVzdC5naXQiLCAib3V0X2lwIjogIjEwNi43NS43Mi42MiIsICJjb250ZW50X3R5cGUiOiAzLCAidXNlcl9pZCI6IDQyMTI5LCAib3ZlcnNlYXMiOiAiZmFsc2UiLCAiY2F0ZWdvcnlfaWQiOiAxMjIyNjh9.html)
 
 [toc]
 
@@ -312,7 +312,7 @@ pass
 
 ## 7 Update
 
-### `2022-10-17`
+### `2022-10-2`
 
 - 重建仓库
 - 添加了 `example` 样例文件夹
