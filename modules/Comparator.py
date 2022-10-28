@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-26 20:22:43
 LastEditors: ltt
-LastEditTime: 2022-10-26 20:43:07
+LastEditTime: 2022-10-28 21:04:59
 FilePath: Comparator.py
 '''
 import json
@@ -78,6 +78,8 @@ def Verilog(setting):
                     print_wrong()
                     return
                 if(std["RegWrite"]):
+                    if(std["RegAddr"] == out["RegAddr"] and out["RegAddr"] == " 0"):
+                        continue
                     if(std["RegAddr"]!=out["RegAddr"] or std["RegData"]!=out["RegData"]):
                         print_wrong()
                         return
