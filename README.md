@@ -246,19 +246,14 @@ pass
 
 ### 3.1.2 生成标准输出
 
-- 枚举 0 ~  MAX_EXE，首先获取第 i 次指令的 pc 地址
-
-  ```bash
-  java -jar Mars\Mars.jar n{i} nc $pc mc CompactDataAtZero {ASM_PATH}
-  ```
-
-  将 pc - 0x00003000 后得到代码段从 0 开始的地址，从而得到当前正在执行的指令 `instr`
-- 将 `instr` 转换为二进制 `code`，根据指令可以得到当前指令改变的寄存器编号或者内存地址，再调用 Mars 得到当前指令改变的寄存器值或者内存值，可以形成如下字典
+- 通过增加传递给 Mars 的参数 `std` 格式化输出文件后得到 std
+- 对于每个指令形成如下字典
 
   ```json
   {
       "instr": "",
       "code": "",
+      "asm": "",
       "RegWrite": true,
       "RegAddr": "",
       "RegData": "",
@@ -267,7 +262,7 @@ pass
       "MemData": ""
   },
   ```
-
+  
   最终得到 std 文件
 
 ## 3.2 Verilog 机器码及 STD 生成
@@ -286,29 +281,24 @@ pass
 
 ### 3.2.2 生成标准输出
 
-- 枚举 0 ~  MAX_EXE，首先获取第 i 次指令的 pc 地址
+- 通过增加传递给 Mars 的参数 `std` 格式化输出文件后得到 std
+- 对于每个指令形成如下字典
 
-  ```bash
-  java -jar Mars\Mars.jar n{i} nc $pc mc CompactDataAtZero {ASM_PATH}
-  ```
+	```json
+	{
+	    "instr": "",
+	    "code": "",
+	    "asm": "",
+	    "RegWrite": true,
+	    "RegAddr": "",
+	    "RegData": "",
+	    "MemWrite": false,
+	    "MemAddr": "",
+	    "MemData": ""
+	},
+	```
 
-  将 pc - 0x00003000 后得到代码段从 0 开始的地址，从而得到当前正在执行的指令 `instr`
-- 将 `instr` 转换为二进制 `code`，根据指令可以得到当前指令改变的寄存器编号或者内存地址，再调用 Mars 得到当前指令改变的寄存器值或者内存值，可以形成如下字典
-
-  ```json
-  {
-      "instr": "",
-      "code": "",
-      "RegWrite": true,
-      "RegAddr": "",
-      "RegData": "",
-      "MemWrite": false,
-      "MemAddr": "",
-      "MemData": ""
-  },
-  ```
-
-  最终得到 std 文件
+	最终得到 std 文件
 
 ## 4.1 导入 Logisim 测试
 
