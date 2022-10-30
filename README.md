@@ -1,6 +1,5 @@
 # 利用 python 对 Logisim/Verilog 中搭建的 CPU 进行自动化测试
 
-- 引用自文件 [CPU 自动化测试](..\..\..\blog\CPU 自动化测试.md)
 - 主目录下有一个样例文件夹 `example`，其中的两个 `bat` 分别用于测试 `.circ` 和 `.v` 文件
 - 选择 python 原因：~~不想写 JAVA~~
 - 一人役
@@ -321,6 +320,7 @@ pass
 - 重构了 std 生成函数
 - 现在会将比对结果同时在 `result.txt` 以及控制台输出
 - 在 `Mars/` 目录下添加 Mars 的改动记录文件 `Mars 修改方案.md` 
+- 增加 `--debug` 参数
 
 ### `2022-10-28`
 
