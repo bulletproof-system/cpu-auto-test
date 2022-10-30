@@ -3,6 +3,7 @@
 - 主目录下有一个样例文件夹 `example`，其中的两个 `bat` 分别用于测试 `.circ` 和 `.v` 文件
 - 选择 python 原因：~~不想写 JAVA~~
 - 一人役
+- 改动 Mars 后 jar 包太大提交不了，故提交的压缩包中只有项目的 README.md 和 Mars 修改方案.md
 - 项目地址 [https://gitee.com/LTT-Repository/cpu-auto-test.git](https://sctrack.sendcloud.net/track/click/eyJuZXRlYXNlIjogImZhbHNlIiwgIm1haWxsaXN0X2lkIjogMCwgInRhc2tfaWQiOiAiIiwgImVtYWlsX2lkIjogIjE2NjY4NTc5MTc2NTBfNDIxMjlfMTkzMDFfMzgzMy5zYy0xMF85XzE3OV8xOTctaW5ib3VuZDAkMTcyODkwMTQwOUBxcS5jb20iLCAic2lnbiI6ICIxNTBhNWI2ZWJhMWVhZTU3ZjU3NGMzYzExYzFiZmEyNCIsICJ1c2VyX2hlYWRlcnMiOiB7fSwgImxhYmVsIjogMCwgInRyYWNrX2RvbWFpbiI6ICJzY3RyYWNrLnNlbmRjbG91ZC5uZXQiLCAicmVhbF90eXBlIjogIiIsICJsaW5rIjogImh0dHBzJTNBLy9naXRlZS5jb20vTFRULVJlcG9zaXRvcnkvY3B1LWF1dG8tdGVzdC5naXQiLCAib3V0X2lwIjogIjEwNi43NS43Mi42MiIsICJjb250ZW50X3R5cGUiOiAzLCAidXNlcl9pZCI6IDQyMTI5LCAib3ZlcnNlYXMiOiAiZmFsc2UiLCAiY2F0ZWdvcnlfaWQiOiAxMjIyNjh9.html)
 
 [toc]
@@ -37,16 +38,44 @@
 - python
   - 版本：`python3` 版本大于等于 3.6
   - 依赖的模块：`sys`、`getopt`、`json` 、`subprocess`、`re`、`hashlib`、`os`
-- \Mars.jar 魔改过命令行输入
+- Mars\Mars.jar 魔改过命令行输入
   - 使用 `n<number>` 指定最大仿真步数
   - 输入 `$pc` 以获取 `pc` 的值
-  - 为了交上去 Mars 文件夹中只剩了 Mars.jar
   - 修改内容见 [Mars 修改方案](Mars/Mars 修改方案.md)
 - Logisim.jar
   - 没有改动
-  - 为了交上去会删除 Logisim文件夹中 Logisim.jar
+- Verilog 环境
+  - 支持 `iverilog` 
 - Windows 10
   - 系统默认 shell：`cmd`
+
+### 注意事项
+
+- 使用 `-f` 或 `--filename` 指定测试用的 .asm 文件，使用 `--test` 指定测试文件(.circ, .v)
+
+- 测试 Logisim 时不会改动源文件，会复制一份到 `output\test.circ` 中再修改该文件的 ROM 以进行测试
+
+- 测试 Verilog 时需要使用 `iverilog` 进行仿真
+
+- 测试 Verilog 时只需使用 `--test` 指定顶层模块如 `mips.v` 然后在 `mips.v` 中 include 其他文件，可以在文件中中使用宏定义避免来回修改文件，比如在 `mips.v` 的开头添加
+
+	```verilog
+	`ifdef IVERILOG
+	`include "control/Controller.v"
+	`include "datapath/DM.v"
+	`include "datapath/GRF.v"
+	`include "datapath/IM.v"
+	`include "datapath/MUX.v"
+	`include "datapath/ALU.v"
+	`include "datapath/Extend.v"
+	`endif 
+	```
+
+	使用 `--argv` 增加传递给 Verilog 编译器的参数比如 `--argv "-D IVERILOG"`
+
+- 测试 Verilog 时会覆盖 `mips.v` 同级目录下的 `code.txt` 文件
+
+​	
 
 ## 1. 初始化
 
@@ -313,7 +342,7 @@ pass
 
 ## 7 Update
 
-`2022-10-30`
+### `2022-10-30`
 
 - 进一步魔改 Mars，现在用命令行运行 Mars 时添加 `std` 参数可以输出每条指令执行时的信息，用于生成 std
 - 由于生成 std 所需的时间大幅减少，去掉了 MD5 比对
