@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-26 20:22:43
 LastEditors: ltt
-LastEditTime: 2022-10-30 17:15:23
+LastEditTime: 2022-10-30 17:47:09
 FilePath: Comparator.py
 '''
 import json
@@ -29,7 +29,7 @@ def Logisim(setting):
                 outs = json.load(out_file)
                 for i in range(len(stds)):
                     std, out = stds[i], outs[i]
-                    print("checking %s" % std["instr"])
+                    print("checking %s:%s" % (std["instr"], std["asm"]))
                     if(std["code"] != out["code"]):
                         print_wrong()
                         return
@@ -78,7 +78,7 @@ def Verilog(setting):
                 outs = json.load(out_file)
                 for i in range(len(stds)):
                     std, out = stds[i], outs[i]
-                    print("checking %s" % std["instr"])
+                    print("checking %s: %s" % (std["instr"], std["asm"]))
                     if(std["pc"] != out["pc"]):
                         print_wrong()
                         return

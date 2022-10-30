@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-23 10:45:14
 LastEditors: ltt
-LastEditTime: 2022-10-30 17:06:38
+LastEditTime: 2022-10-30 17:33:51
 FilePath: Decode.py
 '''
 
@@ -73,6 +73,7 @@ def init_argv():
     except getopt.GetoptError as err:
         print(err)
         sys.exit(2)
+    use_default_setting = True
     for option, value in opts:
         if option in ("--default-setting"):
             setting_file_name = value
@@ -82,13 +83,16 @@ def init_argv():
             except:
                 print(f"找不到 {setting_file_name}")
                 sys.exit(2)
-            return setting
-    try:
-        with open(setting_file_name) as setting_file:
-            setting = json.load(setting_file)
-    except:
-        print(f"找不到 {setting_file_name}")
-        sys.exit(2)
+            
+            use_default_setting = False
+            break
+    if(use_default_setting):
+        try:
+            with open(setting_file_name) as setting_file:
+                setting = json.load(setting_file)
+        except:
+            print(f"找不到 {setting_file_name}")
+            sys.exit(2)
     if(args != []):
         print(f"多余参数 {args}")
     for option, value in opts:
@@ -105,6 +109,8 @@ def init_argv():
             setting[Const.SKIP] = True
         if option == "--force":
             setting[Const.FORCE] = True
+        if option == "--debug":
+            setting[Const.DEBUG] = True
         if option in ("--output-dir"):
             setting[Const.OUTPUT_DIR] = value
         if option in ("--asm"):

@@ -4,6 +4,7 @@
 	"EXECUTION_TIME" : 100,
 	"SKIP" : false,
 	"FORCE" : false,
+	"DEBUG" : false,
 	"OUTPUT_DIR" : "output",
 	"ASM_NAME" : "asm.asm",
 	"CODE_NAME" : "code.txt",

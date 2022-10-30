@@ -42,6 +42,7 @@
   - 使用 `n<number>` 指定最大仿真步数
   - 输入 `$pc` 以获取 `pc` 的值
   - 为了交上去 Mars 文件夹中只剩了 Mars.jar
+  - 修改内容见 [Mars 修改方案](Mars/Mars 修改方案.md)
 - Logisim.jar
   - 没有改动
   - 为了交上去会删除 Logisim文件夹中 Logisim.jar
@@ -62,6 +63,7 @@
   | `-m,--max-execution` | EXECUTION_TIME |      100      |               指令最多执行次数               |
   |         `-b`         |      None      |     False     |         利用原 std 文件直接比对数据         |
   |      `--force`      |      None      |     False     |     强制重新生成 std 文件，优先于 `-b`     |
+  | `--debug` | False | True | 输出调试信息 |
   |    `--output-dir`    |   OUTPUT_DIR   |    output/    |                输出所在文件夹                |
   |       `--asm`       |    ASM_NAME    |    asm.asm    |                指令保存文件名                |
   |       `--code`       |    CODE_NAME    |   code.txt   |               机器码保存文件名               |
@@ -311,6 +313,14 @@ pass
 - 由于有时候 Mars 在出错时返回值是 0 可能导致程序继续进行而不终止
 
 ## 7 Update
+
+`2022-10-30`
+
+- 进一步魔改 Mars，现在用命令行运行 Mars 时添加 `std` 参数可以输出每条指令执行时的信息，用于生成 std
+- 由于生成 std 所需的时间大幅减少，去掉了 MD5 比对
+- 重构了 std 生成函数
+- 现在会将比对结果同时在 `result.txt` 以及控制台输出
+- 在 `Mars/` 目录下添加 Mars 的改动记录文件 `Mars 修改方案.md` 
 
 ### `2022-10-28`
 

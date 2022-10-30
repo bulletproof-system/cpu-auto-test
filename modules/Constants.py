@@ -2,12 +2,12 @@
 Author: ltt
 Date: 2022-10-22 22:17:45
 LastEditors: ltt
-LastEditTime: 2022-10-30 17:03:19
+LastEditTime: 2022-10-30 17:32:34
 FilePath: Constants.py
 '''
 
 shortopts = "hf:n:m:b"
-longopts = ["help","filename=","number=","max-execution=","force","output-dir=",
+longopts = ["help","filename=","number=","max-execution=","force","debug","output-dir=",
             "asm=","code=","result=","test=","compiler=","argv=","std=","out=","mars=",
             "logisim=","jump-enbled=","default-setting="]
 FILE_PATH = "FILE_PATH"
@@ -15,6 +15,7 @@ INSTR_NUM = "INSTR_NUM"
 EXECUTION_TIME = "EXECUTION_TIME"
 SKIP = "SKIP"
 FORCE = "FORCE"
+DEBUG = "DEBUG"
 OUTPUT_DIR = "OUTPUT_DIR"
 ASM_NAME = "ASM_NAME"
 ASM_PATH = "ASM_PATH"

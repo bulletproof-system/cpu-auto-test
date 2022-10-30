@@ -2,11 +2,12 @@
 Author: ltt
 Date: 2022-10-26 20:19:34
 LastEditors: ltt
-LastEditTime: 2022-10-30 17:04:20
+LastEditTime: 2022-10-30 17:40:55
 FilePath: Generator.py
 '''
 from __future__ import barry_as_FLUFL
 from asyncio import base_tasks
+from distutils.log import debug
 import hashlib, re, json, os
 from pyexpat.errors import codes
 
@@ -24,7 +25,9 @@ def generate_code_Logisim(setting):
     """生成机器码"""
     asm, mars = setting[Const.ASM_PATH], setting[Const.MARS_PATH]
     code_path = setting[Const.CODE_PATH]
+    debug = setting[Const.DEBUG]
     data, text = "temp\\data.txt", "temp\\text.txt"
+    if(debug): print("generating code (Logisim)")
     Base.run(["java", "-jar", mars, "me", "nc", "mc",
              "CompactDataAtZero", "dump", ".text", "HexText", data, asm])
     Base.run(["java", "-jar", mars, "me", "nc", "mc",
@@ -38,12 +41,13 @@ def generate_code_Logisim(setting):
     with open(code_path, "w") as code_file:
         code_file.write("v2.0 raw\n")
         code_file.writelines(codes)  # 合并后机器码储存在 code_path 对应文件中
-    # print(''.join(codes))
+    if(debug): print("generating code finish (Logisim)")
     """生成标准输出"""
     max_exe = setting[Const.EXECUTION_TIME]
     std_path = setting[Const.STD_PATH]
     codes += ["00000000"]
     std = []
+    if(debug): print("generating std (Logisim)")
     ret = Base.run(["java","-jar",mars,"me","nc","std","mc","CompactDataAtZero",asm]).split('\n')
     
     for str in ret:
@@ -53,6 +57,7 @@ def generate_code_Logisim(setting):
         pc = ans["pc"] = "0x"+str[6:14]
         instr = ans["instr"] = str[24:32]
         ans["asm"] = re.search("asm:[^\r^\n]*",str).group()[5:]
+        if(debug): print(f"generating {str}")
         
         # 根据指令获取输出
         attr,code = Decode.findInList(instr, setting[Const.INSTRUCTION_LIST]),Decode.toBin(instr)
@@ -73,13 +78,15 @@ def generate_code_Logisim(setting):
 
     with open(std_path, "w") as std_file:
         std_file.write(json.dumps(std, sort_keys=False, indent=4, separators=(',', ': ')))
+    if(debug): print("generating std finish (Logisim)")
     return
 def generate_out_Logisim(setting):
     """获取 Logisim 输出文件"""
+    debug = setting[Const.DEBUG]
     test_path, test_circ = setting[Const.TEST_PATH], setting[Const.TEST_CIRC]
     logisim = setting[Const.LOGISIM_PATH]
     code_path, out_path = setting[Const.CODE_PATH], setting[Const.OUT_PATH]
-
+    if(debug): print("generating out (Logisim)")
     Base.run(["copy", test_path, test_circ])
     with open(test_circ, "r+") as fp:
         with open(code_path, "r") as code_file:
@@ -118,6 +125,7 @@ def generate_out_Logisim(setting):
     with open(out_path, "w") as out_file:
         out_file.write(json.dumps(out, sort_keys=False,
                        indent=4, separators=(',', ': ')))
+    if(debug): print("generating out finish (Logisim)")
     return
 def Logisim(setting):
     """测试 Logisim"""
@@ -136,14 +144,18 @@ def generate_code_Verilog(setting):
     """生成机器码"""
     asm, mars = setting[Const.ASM_PATH], setting[Const.MARS_PATH]
     code_path = setting[Const.CODE_PATH]
+    debug = setting[Const.DEBUG]
+    if(debug): print("generating code (Verilog)")
     Base.run(["java", "-jar", mars, "me", "nc", "mc", "CompactDataAtZero", "dump", ".text", "HexText", code_path, asm])
     with open(code_path, "r") as code_file:
         codes = code_file.readlines()
+    if(debug): print("generating code finish(Verilog)")
     """生成标准输出"""
     max_exe = setting[Const.EXECUTION_TIME]
     std_path = setting[Const.STD_PATH]
     codes += ["00000000"]
     std = []
+    if(debug): print("generating std (Verilog)")
     ret = Base.run(["java","-jar",mars,"me","nc","std","mc","CompactDataAtZero",asm]).split('\n')
     for str in ret:
         ans = {}
@@ -152,6 +164,7 @@ def generate_code_Verilog(setting):
         pc = ans["pc"] = "0x"+str[6:14]
         instr = ans["instr"] = str[24:32]
         ans["asm"] = re.search("asm:[^\r^\n]*",str).group()[5:]
+        if(debug): print(f"generating {str}")
         
         # 根据指令获取输出
         attr,code = Decode.findInList(instr, setting[Const.INSTRUCTION_LIST]),Decode.toBin(instr)
@@ -173,14 +186,17 @@ def generate_code_Verilog(setting):
             std.append(ans)
     with open(std_path, "w") as std_file:
         std_file.write(json.dumps(std, sort_keys=False, indent=4, separators=(',', ': ')))
-    pass
+    if(debug): print("generating code finish (Verilog)")    
+    return
 def generate_out_Verilog(setting):
     """获取 Verilog 输出文件"""
+    debug = setting[Const.DEBUG]
     compiler,argv = setting[Const.COMPILER_TYPE],setting[Const.COMPILER_ARGV]
     test_path,out_path = setting[Const.TEST_PATH],setting[Const.OUT_PATH]
     code_path = f"{os.getcwd()}\\" + setting[Const.CODE_PATH]
     temp = f"{os.getcwd()}\\temp\\out"
     test_branch = f"{os.getcwd()}\\Verilog\\testbranch.v"
+    if(debug): print("generating out (Verilog)")
     if(compiler == "iverilog"):
         (test_path, test_name) = os.path.split(test_path)
         Base.run(["cd",test_path,"&&","copy",code_path,"code.txt"])
@@ -210,7 +226,8 @@ def generate_out_Verilog(setting):
     else:
         pass
 
-
+    if(debug): print("generating out finish (Verilog)")
+    return
 def Verilog(setting):
     """测试 Verilog"""
     skip = setting[Const.SKIP]
