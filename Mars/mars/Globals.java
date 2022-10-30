@@ -1,3 +1,10 @@
+/*
+ * @Author: ltt
+ * @Date: 2022-10-16 14:42:06
+ * @LastEditors: ltt
+ * @LastEditTime: 2022-10-30 15:32:35
+ * @FilePath: Globals.java
+ */
    package mars;
    import mars.mips.instructions.syscalls.*;
    import mars.mips.instructions.*;
@@ -94,6 +101,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       /** MARS exit code -- useful with SYSCALL 17 when running from command line (not GUI) */
       public static int exitCode = 0;
    	
+      // LTT's debug imformation
+      public static boolean outPutStd = false;
+
       public static boolean runSpeedPanelExists = false;
    	
        private static String getCopyrightYears() {

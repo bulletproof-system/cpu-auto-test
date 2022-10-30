@@ -2,9 +2,11 @@
 Author: ltt
 Date: 2022-10-26 20:19:34
 LastEditors: ltt
-LastEditTime: 2022-10-27 15:31:58
+LastEditTime: 2022-10-30 17:04:20
 FilePath: Generator.py
 '''
+from __future__ import barry_as_FLUFL
+from asyncio import base_tasks
 import hashlib, re, json, os
 from pyexpat.errors import codes
 
@@ -40,63 +42,37 @@ def generate_code_Logisim(setting):
     """生成标准输出"""
     max_exe = setting[Const.EXECUTION_TIME]
     std_path = setting[Const.STD_PATH]
-    n = len(codes)
     codes += ["00000000"]
     std = []
-    for i in range(max_exe):
+    ret = Base.run(["java","-jar",mars,"me","nc","std","mc","CompactDataAtZero",asm]).split('\n')
+    
+    for str in ret:
         ans = {}
+        if(str[0:2] != "pc"): continue
         # 获取 pc 及指令
-        if (i == 0):
-            instr = codes[0].strip('\n')
-        else:
-            ret = Base.run(["java", "-jar", mars, f"n{i}", "nc", "$pc", "mc", "CompactDataAtZero", asm])
-            match = re.search("\$pc\t0x[0-9a-zA-Z]{8}", ret)
-            error = re.search("error", ret)
-            if (error != None):
-                print(ret)
-                break
-            index = (int(match.group()[-10:], 16)-0x00003000) >> 2
-            if (index >= n):
-                break
-            instr = codes[index].strip('\n')
-        print("generate "+instr)
+        pc = ans["pc"] = "0x"+str[6:14]
+        instr = ans["instr"] = str[24:32]
+        ans["asm"] = re.search("asm:[^\r^\n]*",str).group()[5:]
         
         # 根据指令获取输出
         attr,code = Decode.findInList(instr, setting[Const.INSTRUCTION_LIST]),Decode.toBin(instr)
-        ans["instr"],ans["code"] = instr, code
+        ans["code"] = code
         if (attr["RegWrite"] == True):
             ans["RegWrite"] = True
-            if ("rd" in attr["RegAddr"]):
-                watch = "$"+f"{int(code[::-1][11:16][::-1], 2)}"
-                ans["RegAddr"] = "0x%08x" % int(code[::-1][11:16][::-1], 2)
-            if ("rt" in attr["RegAddr"]):
-                watch = "$"+f"{int(code[::-1][16:20][::-1], 2)}"
-                ans["RegAddr"] = "0x%08x" % int(code[::-1][16:20][::-1], 2)
-            if ("pc" in attr["RegAddr"]):
-                watch = "$31"
-                ans["RegAddr"] = "0x00011111"
-            ret = Base.run(["java", "-jar", mars, f"n{i+1}", "nc", watch, "mc", "CompactDataAtZero", asm])
-            match = re.search(f"\\{watch}"+"\t0x[0-9a-zA-Z]{8}", ret)
-            ans["RegData"] = match.group()[-10:]
+            ans["RegAddr"] = "0x%08x" % int(str[34:36])
+            ans["RegData"] = "0x"+str[40:48]
         else:
-            ans["RegWrite"] = False
+            ans["RegWrite"] = False   
         if (attr["MemWrite"] == True):
             ans["MemWrite"] = True
-            watch = "$"+f"{int(code[::-1][21:25][::-1], 2)}"
-            ret = Base.run(["java", "-jar", mars, f"n{i+1}", "nc", watch, "mc", "CompactDataAtZero", asm])
-            match = re.search(f"\\{watch}"+"\t0x[0-9a-zA-Z]{8}", ret)
-            addr = hex(Decode.signextend(Decode.toBin(match.group()[-8:])) + Decode.signextend(code[::-1][0:16][::-1]))  # 符号扩展
-            ret = Base.run(["java", "-jar", mars, f"n{i+1}", "nc", f"{addr}-{addr}", "mc", "CompactDataAtZero", asm])
-            ans["MemAddr"] = "0x%08x" % (int(addr, 16) >> 2)
-            match = re.search("Mem\[0x[0-9a-zA-Z]{8}\]\t0x[0-9a-zA-Z]{8}", ret)
-            ans["MemData"] = match.group()[-10:]
+            ans["MemAddr"] = "0x%08x" % (int(str[34:44], 16)>>2)
+            ans["MemData"] = "0x"+str[48:56]
         else:
             ans["MemWrite"] = False
         std.append(ans)
 
     with open(std_path, "w") as std_file:
         std_file.write(json.dumps(std, sort_keys=False, indent=4, separators=(',', ': ')))
-    generate_md5(setting, "Logisim")
     return
 def generate_out_Logisim(setting):
     """获取 Logisim 输出文件"""
@@ -166,63 +142,37 @@ def generate_code_Verilog(setting):
     """生成标准输出"""
     max_exe = setting[Const.EXECUTION_TIME]
     std_path = setting[Const.STD_PATH]
-    
-    n = len(codes)
     codes += ["00000000"]
     std = []
-    for i in range(max_exe):
+    ret = Base.run(["java","-jar",mars,"me","nc","std","mc","CompactDataAtZero",asm]).split('\n')
+    for str in ret:
         ans = {}
+        if(str[0:2] != "pc"): continue
         # 获取 pc 及指令
-        if (i == 0):
-            pc, instr = "0x00003000", codes[0].strip('\n')
-        else:
-            ret = Base.run(["java", "-jar", mars, f"n{i}", "nc", "$pc", "mc", "CompactDataAtZero", asm])
-            match = re.search("\$pc\t0x[0-9a-zA-Z]{8}", ret)
-            error = re.search("error", ret)
-            if (error != None):
-                print(ret)
-                break
-            index = (int(match.group()[-10:], 16)-0x00003000) >> 2
-            if (index >= n):
-                break
-            pc, instr = match.group()[-10:], codes[index].strip('\n')
-        print("generate ", instr)
+        pc = ans["pc"] = "0x"+str[6:14]
+        instr = ans["instr"] = str[24:32]
+        ans["asm"] = re.search("asm:[^\r^\n]*",str).group()[5:]
+        
         # 根据指令获取输出
         attr,code = Decode.findInList(instr, setting[Const.INSTRUCTION_LIST]),Decode.toBin(instr)
-        ans["instr"],ans["code"],ans["pc"] = instr, code, pc
+        ans["code"] = code
         if (attr["RegWrite"] == True):
             ans["RegWrite"] = True
-            if ("rd" in attr["RegAddr"]):
-                watch = "$"+f"{int(code[::-1][11:16][::-1], 2)}"
-                ans["RegAddr"] = "%2d" % int(code[::-1][11:16][::-1], 2)
-            if ("rt" in attr["RegAddr"]):
-                watch = "$"+f"{int(code[::-1][16:20][::-1], 2)}"
-                ans["RegAddr"] = "%2d" % int(code[::-1][16:20][::-1], 2)
-            if ("pc" in attr["RegAddr"]):
-                watch = "$31"
-                ans["RegAddr"] = "31"
-            ret = Base.run(["java", "-jar", mars, f"n{i+1}", "nc", watch, "mc", "CompactDataAtZero", asm])
-            match = re.search(f"\\{watch}"+"\t0x[0-9a-zA-Z]{8}", ret)
-            ans["RegData"] = match.group()[-10:]
+            ans["RegAddr"] = str[34:36]
+            ans["RegData"] = "0x"+str[40:48]
         else:
-            ans["RegWrite"] = False
+            ans["RegWrite"] = False   
         if (attr["MemWrite"] == True):
             ans["MemWrite"] = True
-            watch = "$"+f"{int(code[::-1][21:25][::-1], 2)}"
-            ret = Base.run(["java", "-jar", mars, f"n{i+1}", "nc", watch, "mc", "CompactDataAtZero", asm])
-            match = re.search(f"\\{watch}"+"\t0x[0-9a-zA-Z]{8}", ret)
-            addr = hex(Decode.signextend(Decode.toBin(match.group()[-8:])) + Decode.signextend(code[::-1][0:16][::-1]))  # 符号扩展
-            ret = Base.run(["java", "-jar", mars, f"n{i+1}", "nc", f"{addr}-{addr}", "mc", "CompactDataAtZero", asm])
-            ans["MemAddr"] = "0x%08x" % (int(addr, 16))
-            match = re.search("Mem\[0x[0-9a-zA-Z]{8}\]\t0x[0-9a-zA-Z]{8}", ret)
-            ans["MemData"] = match.group()[-10:]
+            ans["MemAddr"] = str[34:44]
+            ans["MemData"] = "0x"+str[48:56]
         else:
             ans["MemWrite"] = False
+    
         if (attr["RegWrite"] or attr["MemWrite"]):
             std.append(ans)
     with open(std_path, "w") as std_file:
         std_file.write(json.dumps(std, sort_keys=False, indent=4, separators=(',', ': ')))
-    generate_md5(setting,"Verilog")
     pass
 def generate_out_Verilog(setting):
     """获取 Verilog 输出文件"""
@@ -271,34 +221,4 @@ def Verilog(setting):
             Base.run(["copy", setting[Const.FILE_PATH], setting[Const.ASM_PATH]])
             generate_code_Verilog(setting)
     generate_out_Verilog(setting)
-
-
-def generate_md5(setting,last_str):
-    """生成 MD5 文件"""
-    file_md5_path = setting[Const.FILE_MD5]
-    code_md5_path = setting[Const.CODE_MD5]
-    std_md5_path = setting[Const.STD_MD5]
-    last_md5_path = setting[Const.LAST_MD5]
-    file_path = setting[Const.FILE_PATH]
-    code_path = setting[Const.CODE_PATH]
-    std_path = setting[Const.STD_PATH]
-    with open(file_path, "r", encoding="utf-8") as fp:
-        file_str = fp.read()
-        file_md5 = hashlib.md5(file_str.encode("utf-8")).hexdigest()
-        with open(file_md5_path, "w") as fp:
-            fp.write(file_md5)
-    with open(code_path, "r", encoding="utf-8") as fp:
-        code_str = fp.read()
-        code_md5 = hashlib.md5(code_str.encode("utf-8")).hexdigest()
-        with open(code_md5_path, "w") as fp:
-            fp.write(code_md5)
-    with open(std_path, "r", encoding="utf-8") as fp:
-        std_str = fp.read()
-        std_md5 = hashlib.md5(std_str.encode("utf-8")).hexdigest()
-        with open(std_md5_path, "w") as fp:
-            fp.write(std_md5)
-    with open(std_path, "r", encoding="utf-8") as fp:
-        last_md5 = last_str
-        with open(last_md5_path, "w") as fp:
-            fp.write(last_md5)
             

@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-23 10:45:14
 LastEditors: ltt
-LastEditTime: 2022-10-27 11:11:09
+LastEditTime: 2022-10-30 17:06:38
 FilePath: Decode.py
 '''
 
@@ -143,47 +143,14 @@ def init_argv():
         pass
     if(setting[Const.FORCE]): 
         setting[Const.SKIP] = False
-        return setting
-    if(setting[Const.FILE_PATH]):
-        try:
-            file_md5_path = setting[Const.FILE_MD5]
-            code_md5_path = setting[Const.CODE_MD5]
-            std_md5_path = setting[Const.STD_MD5]
-            last_md5_path = setting[Const.LAST_MD5]
-            file_path = setting[Const.FILE_PATH]
-            code_path = setting[Const.CODE_PATH]
-            std_path = setting[Const.STD_PATH]
-            last_md5 = setting[Const.TEST_TYPE]
-            with open(file_md5_path, "r") as fp:
-                file_md5_old = fp.read()
-            with open(code_md5_path, "r") as fp:
-                code_md5_old = fp.read()
-            with open(std_md5_path, "r") as fp:
-                std_md5_old = fp.read()
-            with open(last_md5_path, "r") as fp:
-                last_md5_old = fp.read()
-            with open(file_path, "r", encoding="utf-8") as fp:
-                file_str = fp.read()
-                file_md5 = hashlib.md5(file_str.encode("utf-8")).hexdigest()
-            with open(code_path, "r", encoding="utf-8") as fp:
-                code_str = fp.read()
-                code_md5 = hashlib.md5(code_str.encode("utf-8")).hexdigest()
-            with open(std_path, "r", encoding="utf-8") as fp:
-                std_str = fp.read()
-                std_md5 = hashlib.md5(std_str.encode("utf-8")).hexdigest()
-            if(file_md5 == file_md5_old and code_md5 == code_md5_old and std_md5 == std_md5_old and last_md5_old == last_md5):
-                setting[Const.SKIP] = True
-                print("输入文件相同，直接进行比对")
-        except:
-            pass
-    
-    if(re.search(".circ",test_path) != None):
-        setting[Const.TEST_TYPE] = "Logisim"
-    elif(re.search(".v",test_path) != None):
-        setting[Const.TEST_TYPE] = "Verilog"
-    else:
-        pass
     return setting
+
+def get_file_md5(file_path):
+    """生成文件 MD5 值"""
+    with open(file_path, "r", encoding="utf-8") as fp:
+        file_str = fp.read()
+        file_md5 = hashlib.md5(file_str.encode("utf-8")).hexdigest()
+    return file_md5
 
 if __name__ == "__main__":
 	print(signextend("1111001100"))

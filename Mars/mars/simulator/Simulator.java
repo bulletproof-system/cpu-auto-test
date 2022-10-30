@@ -6,7 +6,9 @@
    import mars.mips.instructions.*;
    import java.util.*;
    import javax.swing.*;
-   import java.awt.event.*;
+import javax.xml.bind.annotation.XmlElementDecl.GLOBAL;
+
+import java.awt.event.*;
 	
 	/*
 Copyright (c) 2003-2010,  Pete Sanderson and Kenneth Vollmar
@@ -343,8 +345,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                             Exceptions.RESERVED_INSTRUCTION_EXCEPTION);
                      }
                      // THIS IS WHERE THE INSTRUCTION EXECUTION IS ACTUALLY SIMULATED!
+                     if(Globals.outPutStd){
+                        System.out.print("\npc: "+Binary.intToHexString(pc));
+                  	   System.out.print(" instr: "+Binary.intToHexString(statement.getBinaryStatement())+" ");
+                     }
                      instruction.getSimulationCode().simulate(statement);
-                  	
+                     if(Globals.outPutStd)
+                        System.out.print(" asm: "+statement.getPrintableBasicAssemblyStatement()+" ");
                   	// IF statement added 7/26/06 (explanation above)
                      if (Globals.getSettings().getBackSteppingEnabled()) {
                         Globals.program.getBackStepper().addDoNothing(pc);

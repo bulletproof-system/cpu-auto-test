@@ -403,6 +403,11 @@ public class MarsLaunch {
             countInstructions = true;
             continue;
          }
+         // 输出 std 信息
+         if (args[i].toLowerCase().equals("std")) { 
+            Globals.outPutStd = true;
+            continue;
+         }
          // Check for stand-alone integer, which is the max execution steps option
          if (args[i].toLowerCase().indexOf("n")==0) {
             String s = args[i].substring(1);					   

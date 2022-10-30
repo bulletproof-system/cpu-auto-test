@@ -152,7 +152,6 @@ hs_err_pid*
 
 output/test.circ
 .vscode/
-MD5/*
 output/*
 temp/*
 dump.bat

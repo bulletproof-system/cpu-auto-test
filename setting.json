@@ -17,10 +17,6 @@
 	"JUMP_ENBLED" : "false",
 	"COMPILER_TYPE" : "iverilog",
 	"COMPILER_ARGV" : "",
-	"FILE_MD5" : "MD5\\FILE_MD5",
-	"CODE_MD5" : "MD5\\CODE_MD5",
-	"STD_MD5" : "MD5\\STD_MD5",
-	"LAST_MD5" : "MD5\\LAST_MD5",
 	"TEST_TYPE" : "",
 	"INSTRUCTION_LIST" : [
 		{

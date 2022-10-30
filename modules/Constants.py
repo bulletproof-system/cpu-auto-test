@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-22 22:17:45
 LastEditors: ltt
-LastEditTime: 2022-10-27 11:15:55
+LastEditTime: 2022-10-30 17:03:19
 FilePath: Constants.py
 '''
 
@@ -33,10 +33,6 @@ LOGISIM_PATH = "LOGISIM_PATH"
 JUMP_ENBLED = "JUMP_ENBLED"
 COMPILER_TYPE = "COMPILER_TYPE"
 COMPILER_ARGV = "COMPILER_ARGV"
-FILE_MD5 = "FILE_MD5"
-CODE_MD5 = "CODE_MD5"
-STD_MD5 = "STD_MD5"
-LAST_MD5 = "LAST_MD5"
 INSTRUCTION_LIST = "INSTRUCTION_LIST"
 TEST_TYPE = "TEST_TYPE"
 ROM =r"""<comp lib=\"4\" loc=\"\([0-9]*,[0-9]*\)\" name=\"ROM\">
