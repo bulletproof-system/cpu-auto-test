@@ -5,7 +5,7 @@
 - 一人役
 - 改动 Mars 后 jar 包太大提交不了，故提交的压缩包中只有项目的 README.md 和 Mars 修改方案.md
 - 有一个共享测试数据的想法，但还没实现
-- 项目地址 [https://gitee.com/LTT-Repository/cpu-auto-test.git](https://sctrack.sendcloud.net/track/click/eyJuZXRlYXNlIjogImZhbHNlIiwgIm1haWxsaXN0X2lkIjogMCwgInRhc2tfaWQiOiAiIiwgImVtYWlsX2lkIjogIjE2NjY4NTc5MTc2NTBfNDIxMjlfMTkzMDFfMzgzMy5zYy0xMF85XzE3OV8xOTctaW5ib3VuZDAkMTcyODkwMTQwOUBxcS5jb20iLCAic2lnbiI6ICIxNTBhNWI2ZWJhMWVhZTU3ZjU3NGMzYzExYzFiZmEyNCIsICJ1c2VyX2hlYWRlcnMiOiB7fSwgImxhYmVsIjogMCwgInRyYWNrX2RvbWFpbiI6ICJzY3RyYWNrLnNlbmRjbG91ZC5uZXQiLCAicmVhbF90eXBlIjogIiIsICJsaW5rIjogImh0dHBzJTNBLy9naXRlZS5jb20vTFRULVJlcG9zaXRvcnkvY3B1LWF1dG8tdGVzdC5naXQiLCAib3V0X2lwIjogIjEwNi43NS43Mi42MiIsICJjb250ZW50X3R5cGUiOiAzLCAidXNlcl9pZCI6IDQyMTI5LCAib3ZlcnNlYXMiOiAiZmFsc2UiLCAiY2F0ZWdvcnlfaWQiOiAxMjIyNjh9.html)
+- [项目地址](https://gitee.com/LTT-Repository/cpu-auto-test) 
 
 [toc]
 
