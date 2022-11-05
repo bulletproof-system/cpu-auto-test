@@ -2,16 +2,16 @@
 Author: ltt
 Date: 2022-10-26 20:22:43
 LastEditors: ltt
-LastEditTime: 2022-10-30 17:47:09
+LastEditTime: 2022-11-04 23:23:41
 FilePath: Comparator.py
 '''
 import json
 
-import modules.Constants as Const
+import modules.Global as Global
 
-def Logisim(setting):
+def Logisim():
     """比对 Logisim"""
-    result_path = setting[Const.RESULT_PATH]
+    result_path = Global.RESULT_PATH
     with open(result_path, "w") as fp:
         def print_wrong():
             print(f"wrong instruction is found on line {i+1}")
@@ -21,8 +21,8 @@ def Logisim(setting):
             fp.write(f"we got:\n {json.dumps(out, sort_keys=False, indent=4, separators=(',', ': '))}\n")
             fp.write(f"we expected:\n {json.dumps(std, sort_keys=False, indent=4, separators=(',', ': '))}\n")
             return
-        std_path = setting[Const.STD_PATH]
-        out_path = setting[Const.OUT_PATH]
+        std_path = Global.STD_PATH
+        out_path = Global.OUT_PATH
         with open(std_path) as std_file:
             with open(out_path) as out_file:
                 stds = json.load(std_file)
@@ -58,9 +58,9 @@ def Logisim(setting):
         print("Accepted")
         fp.write("Accepted\n")
     
-def Verilog(setting):
+def Verilog():
     """比对 Verilog"""
-    result_path = setting[Const.RESULT_PATH]
+    result_path = Global.RESULT_PATH
     with open(result_path, "w") as fp:
         def print_wrong():
             print(f"wrong instruction is found on line {i+1}")
@@ -70,8 +70,8 @@ def Verilog(setting):
             fp.write(f"we got:\n {json.dumps(out, sort_keys=False, indent=4, separators=(',', ': '))}\n")
             fp.write(f"we expected:\n {json.dumps(std, sort_keys=False, indent=4, separators=(',', ': '))}\n")
             return
-        std_path = setting[Const.STD_PATH]
-        out_path = setting[Const.OUT_PATH]
+        std_path = Global.STD_PATH
+        out_path = Global.OUT_PATH
         with open(std_path) as std_file:
             with open(out_path) as out_file:
                 stds = json.load(std_file)
@@ -89,8 +89,6 @@ def Verilog(setting):
                         print_wrong()
                         return
                     if(std["RegWrite"]):
-                        if(std["RegAddr"] == out["RegAddr"] and out["RegAddr"] == " 0"):
-                            continue
                         if(std["RegAddr"]!=out["RegAddr"] or std["RegData"]!=out["RegData"]):
                             print_wrong()
                             return

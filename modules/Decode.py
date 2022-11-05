@@ -2,13 +2,13 @@
 Author: ltt
 Date: 2022-10-23 10:45:14
 LastEditors: ltt
-LastEditTime: 2022-10-30 17:33:51
+LastEditTime: 2022-11-05 12:58:17
 FilePath: Decode.py
 '''
 
 import sys, getopt, json, re, hashlib
 
-import modules.Constants as Const
+import modules.Global as Global
 
 def toBin(string):
     """十六进制字符串转二进制"""
@@ -65,11 +65,35 @@ def signextend(code):
     else:
         return int(code, 2)
 
+def load_setting(setting):
+    Global.FILE_PATH = setting["FILE_PATH"]
+    Global.INSTR_NUM = setting["INSTR_NUM"]
+    Global.EXECUTION_TIME = setting["EXECUTION_TIME"]
+    Global.SKIP = setting["SKIP"]
+    Global.FORCE = setting["FORCE"]
+    Global.DEBUG = setting["DEBUG"]
+    Global.OUTPUT_DIR = setting["OUTPUT_DIR"]
+    Global.ASM_NAME = setting["ASM_NAME"]
+    Global.CODE_NAME  = setting["CODE_NAME"]
+    Global.RESULT_NAME  = setting["RESULT_NAME"]
+    Global.TEST_PATH  = setting["TEST_PATH"]
+    Global.TEST_CIRC  = setting["TEST_CIRC"]
+    Global.STD_NAME  = setting["STD_NAME"]
+    Global.OUT_NAME  = setting["OUT_NAME"]
+    Global.MARS_PATH  = setting["MARS_PATH"]
+    Global.LOGISIM_PATH  = setting["LOGISIM_PATH"]
+    Global.DELAY_ENBLED  = setting["DELAY_ENBLED"]
+    Global.COMPILER_TYPE  = setting["COMPILER_TYPE"]
+    Global.COMPILER_ARGV  = setting["COMPILER_ARGV"]
+    Global.TEST_TYPE  = setting["TEST_TYPE"]
+    Global.INSTRUCTION_LIST  = setting["INSTRUCTION_LIST"]
+    # Global.  = ""]
+    
 def init_argv():
     """读取参数"""
     setting_file_name = "setting.json"
     try:
-        opts, args = getopt.gnu_getopt(sys.argv[1:], Const.shortopts, Const.longopts)
+        opts, args = getopt.gnu_getopt(sys.argv[1:], Global.shortopts, Global.longopts)
     except getopt.GetoptError as err:
         print(err)
         sys.exit(2)
@@ -95,60 +119,61 @@ def init_argv():
             sys.exit(2)
     if(args != []):
         print(f"多余参数 {args}")
+    load_setting(setting)
     for option, value in opts:
         if option in ("-h","--help"):
             print("没写")
             sys.exit(0)
         if option in ("-f","--filename"):
-            setting[Const.FILE_PATH] = value
+            Global.FILE_PATH = value
         if option in ("-n","--number"):
-            setting[Const.INSTR_NUM] = value
+            Global.INSTR_NUM = value
         if option in ("-m","--max-execution"):
-            setting[Const.EXECUTION_TIME] = value
+            Global.EXECUTION_TIME = value
         if option in ("-b"):
-            setting[Const.SKIP] = True
+            Global.SKIP = True
         if option == "--force":
-            setting[Const.FORCE] = True
+            Global.FORCE = True
         if option == "--debug":
-            setting[Const.DEBUG] = True
+            Global.DEBUG = True
         if option in ("--output-dir"):
-            setting[Const.OUTPUT_DIR] = value
+            Global.OUTPUT_DIR = value
         if option in ("--asm"):
-            setting[Const.ASM_NAME] = value
+            Global.ASM_NAME = value
         if option in ("--code"):
-            setting[Const.ASM_NAME] = value
+            Global.ASM_NAME = value
         if option in ("--result"):
-            setting[Const.RESULT_NAME] = value
+            Global.RESULT_NAME = value
         if option in ("--test"):
-            setting[Const.TEST_PATH] = value
+            Global.TEST_PATH = value
         if option in ("--compilor"):
-            setting[Const.COMPILER_TYPE] = value
+            Global.COMPILER_TYPE = value
         if option in ("--argv"):
-            setting[Const.COMPILER_ARGV] = value
+            Global.COMPILER_ARGV = value
         if option in ("--std"):
-            setting[Const.STD_NAME] = value
+            Global.STD_NAME = value
         if option in ("--out"):
-            setting[Const.OUT_NAME] = value
+            Global.OUT_NAME = value
         if option in ("--mars"):
-            setting[Const.MARS_PATH] = value
+            Global.MARS_PATH = value
         if option in ("--logisim"):
-            setting[Const.LOGISIM_PATH] = value
-        if option in ("--jump-enbled"):
-            setting[Const.JUMP_ENBLED] = value
-    setting[Const.ASM_PATH] = f"{setting[Const.OUTPUT_DIR]}"+"\\"+f"{setting[Const.ASM_NAME]}"
-    setting[Const.CODE_PATH] = f"{setting[Const.OUTPUT_DIR]}"+"\\"+f"{setting[Const.CODE_NAME]}"
-    setting[Const.RESULT_PATH] = f"{setting[Const.OUTPUT_DIR]}"+"\\"+f"{setting[Const.RESULT_NAME]}"
-    setting[Const.STD_PATH] = f"{setting[Const.OUTPUT_DIR]}"+"\\"+f"{setting[Const.STD_NAME]}"
-    setting[Const.OUT_PATH] = f"{setting[Const.OUTPUT_DIR]}"+"\\"+f"{setting[Const.OUT_NAME]}"
-    test_path = setting[Const.TEST_PATH]
+            Global.LOGISIM_PATH = value
+        if option in ("--delay-enbled"):
+            Global.DELAY_ENBLED = value
+    Global.ASM_PATH = Global.OUTPUT_DIR+"\\"+Global.ASM_NAME
+    Global.CODE_PATH = Global.OUTPUT_DIR+"\\"+Global.CODE_NAME
+    Global.RESULT_PATH = f"{Global.OUTPUT_DIR}"+"\\"+Global.RESULT_NAME
+    Global.STD_PATH = Global.OUTPUT_DIR+"\\"+Global.STD_NAME
+    Global.OUT_PATH = Global.OUTPUT_DIR+"\\"+Global.OUT_NAME
+    test_path = Global.TEST_PATH
     if(re.search(".circ",test_path) != None):
-        setting[Const.TEST_TYPE] = "Logisim"
+        Global.TEST_TYPE = "Logisim"
     elif(re.search(".v",test_path) != None):
-        setting[Const.TEST_TYPE] = "Verilog"
+        Global.TEST_TYPE = "Verilog"
     else:
         pass
-    if(setting[Const.FORCE]): 
-        setting[Const.SKIP] = False
+    if(Global.FORCE): 
+        Global.SKIP = False
     return setting
 
 def get_file_md5(file_path):

@@ -15,7 +15,7 @@
 	"OUT_NAME" : "out.json",
 	"MARS_PATH" : "Mars\\Mars.jar",
 	"LOGISIM_PATH" : "Logisim\\logisim.jar",
-	"JUMP_ENBLED" : "false",
+	"DELAY_ENBLED" : "false",
 	"COMPILER_TYPE" : "iverilog",
 	"COMPILER_ARGV" : "",
 	"TEST_TYPE" : "",

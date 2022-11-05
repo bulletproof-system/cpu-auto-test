@@ -2,7 +2,7 @@
  * @Author: ltt
  * @Date: 2022-10-16 14:42:06
  * @LastEditors: ltt
- * @LastEditTime: 2022-10-30 16:22:58
+ * @LastEditTime: 2022-11-05 23:33:15
  * @FilePath: RegisterFile.java
  */
    package mars.mips.hardware;
@@ -101,12 +101,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
    	  
        public static int updateRegister(int num, int val){
          int old = 0;
-         if(Globals.outPutStd)
-            System.out.print(String.format("$%2d <= %08x", num, val));
          if(num == 0){
             //System.out.println("You can not change the value of the zero register.");
          }
          else {
+            if(Globals.outPutStd)
+               System.out.print(String.format("$%2d <= %08x", num, val));
             for (int i=0; i< regFile.length; i++){
                if(regFile[i].getNumber()== num) {
                   old = (Globals.getSettings().getBackSteppingEnabled())
@@ -137,8 +137,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
    	
        public static void updateRegister(String reg, int val){
          if(reg.equals("zero")){
-            if(Globals.outPutStd)
-               System.out.print(String.format("$ 0 <= %08h", val));
+            // if(Globals.outPutStd)
+               // System.out.print(String.format("$ 0 <= %08h", val));
             //System.out.println("You can not change the value of the zero register.");
          }
          else{

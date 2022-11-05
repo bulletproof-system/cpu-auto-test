@@ -2,28 +2,28 @@
 Author: ltt
 Date: 2022-10-22 22:12:33
 LastEditors: ltt
-LastEditTime: 2022-10-27 14:16:55
+LastEditTime: 2022-11-05 12:56:52
 FilePath: auto_test.py
 '''
 import re
 import modules.Base as Base
 import modules.Decode as Decode
-import modules.Constants as Const
+import modules.Global as Global
 import modules.Generator as Generator
 import modules.Comparator as Comparator
 
-def test_env(setting): 
+def test_env(): 
     """测试环境"""
     Base.run([f"java","-version"],errdesc="java not found")
-    Base.run(["java", "-jar", setting[Const.MARS_PATH], 'h'], errdesc="mars not found")
-    test_type = setting[Const.TEST_TYPE]
+    Base.run(["java", "-jar", Global.MARS_PATH, 'h'], errdesc="mars not found")
+    test_type = Global.TEST_TYPE
     if(test_type == "Logisim"):
         try:
-            Base.run(["java","-jar",setting[Const.LOGISIM_PATH],"-version"], errdesc="Logisim not found")
+            Base.run(["java","-jar",Global.LOGISIM_PATH,"-version"], errdesc="Logisim not found")
         except:
             print("无可用 Logisim.jar")
     elif(test_type == "Verilog"):
-        compiler_type = setting[Const.COMPILER_TYPE]
+        compiler_type = Global.COMPILER_TYPE
         if(compiler_type == "iverilog"):
             try:
                 Base.run(["where","iverilog"])
@@ -31,18 +31,21 @@ def test_env(setting):
                 print("无可用 verilog 编译器")
 
 def main():
-    setting = Decode.init_argv() # 读取参数
-    test_env(setting)  # 测试环境
+    Decode.init_argv() # 读取参数
+    test_env()  # 测试环境
     
-    test_path = setting[Const.TEST_PATH]
-    test_type = setting[Const.TEST_TYPE]
+    test_path = Global.TEST_PATH
+    test_type = Global.TEST_TYPE
     if(test_type == "Logisim"):
-        Generator.Logisim(setting)
-        Comparator.Logisim(setting)
+        Generator.Logisim()
+        Comparator.Logisim()
         pass
     elif(test_type == "Verilog"):
-        Generator.Verilog(setting)
-        Comparator.Verilog(setting)
+        if(Global.DELAY_ENBLED == False):
+            Generator.Single_Cycle()
+        else:
+            Generator.PipeLine()
+        Comparator.Verilog()
         pass
     else:
         print("无效测试文件名")

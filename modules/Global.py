@@ -2,14 +2,14 @@
 Author: ltt
 Date: 2022-10-22 22:17:45
 LastEditors: ltt
-LastEditTime: 2022-10-30 17:32:34
-FilePath: Constants.py
+LastEditTime: 2022-11-04 23:00:47
+FilePath: Global.py
 '''
 
 shortopts = "hf:n:m:b"
 longopts = ["help","filename=","number=","max-execution=","force","debug","output-dir=",
             "asm=","code=","result=","test=","compiler=","argv=","std=","out=","mars=",
-            "logisim=","jump-enbled=","default-setting="]
+            "logisim=","delay-enbled=","default-setting="]
 FILE_PATH = "FILE_PATH"
 INSTR_NUM = "INSTR_NUM"
 EXECUTION_TIME = "EXECUTION_TIME"
@@ -31,7 +31,7 @@ OUT_NAME = "OUT_NAME"
 OUT_PATH = "OUT_PATH"
 MARS_PATH = "MARS_PATH"
 LOGISIM_PATH = "LOGISIM_PATH"
-JUMP_ENBLED = "JUMP_ENBLED"
+DELAY_ENBLED = "DELAY_ENBLED"
 COMPILER_TYPE = "COMPILER_TYPE"
 COMPILER_ARGV = "COMPILER_ARGV"
 INSTRUCTION_LIST = "INSTRUCTION_LIST"

@@ -2,14 +2,14 @@
 Author: ltt
 Date: 2022-10-26 20:19:34
 LastEditors: ltt
-LastEditTime: 2022-10-27 15:31:58
-FilePath: Generator.py
+LastEditTime: 2022-11-04 22:52:16
+FilePath: Generator copy.py
 '''
 import hashlib, re, json, os
 from pyexpat.errors import codes
 
 import modules.Base as Base
-import modules.Constants as Const
+import modules.Global as Global
 import modules.Decode as Decode
 
 
@@ -20,8 +20,8 @@ def generate_instruction(setting):
 def generate_code_Logisim(setting):
     """生成 Logisim 机器码和标准输出"""
     """生成机器码"""
-    asm, mars = setting[Const.ASM_PATH], setting[Const.MARS_PATH]
-    code_path = setting[Const.CODE_PATH]
+    asm, mars = setting[Global.ASM_PATH], setting[Global.MARS_PATH]
+    code_path = setting[Global.CODE_PATH]
     data, text = "temp\\data.txt", "temp\\text.txt"
     Base.run(["java", "-jar", mars, "me", "nc", "mc",
              "CompactDataAtZero", "dump", ".text", "HexText", data, asm])
@@ -32,14 +32,14 @@ def generate_code_Logisim(setting):
     with open(text, "r") as TextAtZeroFile:
         TextAtZero = TextAtZeroFile.readlines()
     codes = Decode.merge(DataAtZero, TextAtZero,
-                         setting[Const.INSTRUCTION_LIST])
+                         setting[Global.INSTRUCTION_LIST])
     with open(code_path, "w") as code_file:
         code_file.write("v2.0 raw\n")
         code_file.writelines(codes)  # 合并后机器码储存在 code_path 对应文件中
     # print(''.join(codes))
     """生成标准输出"""
-    max_exe = setting[Const.EXECUTION_TIME]
-    std_path = setting[Const.STD_PATH]
+    max_exe = setting[Global.EXECUTION_TIME]
+    std_path = setting[Global.STD_PATH]
     n = len(codes)
     codes += ["00000000"]
     std = []
@@ -62,7 +62,7 @@ def generate_code_Logisim(setting):
         print("generate "+instr)
         
         # 根据指令获取输出
-        attr,code = Decode.findInList(instr, setting[Const.INSTRUCTION_LIST]),Decode.toBin(instr)
+        attr,code = Decode.findInList(instr, setting[Global.INSTRUCTION_LIST]),Decode.toBin(instr)
         ans["instr"],ans["code"] = instr, code
         if (attr["RegWrite"] == True):
             ans["RegWrite"] = True
@@ -100,16 +100,16 @@ def generate_code_Logisim(setting):
     return
 def generate_out_Logisim(setting):
     """获取 Logisim 输出文件"""
-    test_path, test_circ = setting[Const.TEST_PATH], setting[Const.TEST_CIRC]
-    logisim = setting[Const.LOGISIM_PATH]
-    code_path, out_path = setting[Const.CODE_PATH], setting[Const.OUT_PATH]
+    test_path, test_circ = setting[Global.TEST_PATH], setting[Global.TEST_CIRC]
+    logisim = setting[Global.LOGISIM_PATH]
+    code_path, out_path = setting[Global.CODE_PATH], setting[Global.OUT_PATH]
 
     Base.run(["copy", test_path, test_circ])
     with open(test_circ, "r+") as fp:
         with open(code_path, "r") as code_file:
             code_str = code_file.readlines()[1:]
             circ_str = fp.read()
-            rom_str = re.search(Const.ROM, circ_str)
+            rom_str = re.search(Global.ROM, circ_str)
             if (rom_str == None):
                 print("无 ROM 组件")
                 raise RuntimeError
@@ -117,7 +117,7 @@ def generate_out_Logisim(setting):
             rom_str = re.sub(r"\n([0-9a-zA-Z ]*\n*)*</a>",
                              f"\n{' '.join(code_str)}</a>", rom_str.group())
             # print(rom_str)
-            circ_str = re.sub(Const.ROM, rom_str, circ_str)
+            circ_str = re.sub(Global.ROM, rom_str, circ_str)
             fp.seek(0, 0)
             fp.truncate()
             fp.write(circ_str)
@@ -145,12 +145,12 @@ def generate_out_Logisim(setting):
     return
 def Logisim(setting):
     """测试 Logisim"""
-    skip = setting[Const.SKIP]
+    skip = setting[Global.SKIP]
     if (skip == False):
-        if (setting[Const.FILE_PATH] == ""):
+        if (setting[Global.FILE_PATH] == ""):
             generate_instruction(setting)
         else:
-            Base.run(["copy", setting[Const.FILE_PATH], setting[Const.ASM_PATH]])
+            Base.run(["copy", setting[Global.FILE_PATH], setting[Global.ASM_PATH]])
             generate_code_Logisim(setting)
     generate_out_Logisim(setting)
 
@@ -158,14 +158,14 @@ def Logisim(setting):
 def generate_code_Verilog(setting):
     """生成 Verilog 机器码和标准输出"""
     """生成机器码"""
-    asm, mars = setting[Const.ASM_PATH], setting[Const.MARS_PATH]
-    code_path = setting[Const.CODE_PATH]
+    asm, mars = setting[Global.ASM_PATH], setting[Global.MARS_PATH]
+    code_path = setting[Global.CODE_PATH]
     Base.run(["java", "-jar", mars, "me", "nc", "mc", "CompactDataAtZero", "dump", ".text", "HexText", code_path, asm])
     with open(code_path, "r") as code_file:
         codes = code_file.readlines()
     """生成标准输出"""
-    max_exe = setting[Const.EXECUTION_TIME]
-    std_path = setting[Const.STD_PATH]
+    max_exe = setting[Global.EXECUTION_TIME]
+    std_path = setting[Global.STD_PATH]
     
     n = len(codes)
     codes += ["00000000"]
@@ -188,7 +188,7 @@ def generate_code_Verilog(setting):
             pc, instr = match.group()[-10:], codes[index].strip('\n')
         print("generate ", instr)
         # 根据指令获取输出
-        attr,code = Decode.findInList(instr, setting[Const.INSTRUCTION_LIST]),Decode.toBin(instr)
+        attr,code = Decode.findInList(instr, setting[Global.INSTRUCTION_LIST]),Decode.toBin(instr)
         ans["instr"],ans["code"],ans["pc"] = instr, code, pc
         if (attr["RegWrite"] == True):
             ans["RegWrite"] = True
@@ -226,9 +226,9 @@ def generate_code_Verilog(setting):
     pass
 def generate_out_Verilog(setting):
     """获取 Verilog 输出文件"""
-    compiler,argv = setting[Const.COMPILER_TYPE],setting[Const.COMPILER_ARGV]
-    test_path,out_path = setting[Const.TEST_PATH],setting[Const.OUT_PATH]
-    code_path = f"{os.getcwd()}\\" + setting[Const.CODE_PATH]
+    compiler,argv = setting[Global.COMPILER_TYPE],setting[Global.COMPILER_ARGV]
+    test_path,out_path = setting[Global.TEST_PATH],setting[Global.OUT_PATH]
+    code_path = f"{os.getcwd()}\\" + setting[Global.CODE_PATH]
     temp = f"{os.getcwd()}\\temp\\out"
     test_branch = f"{os.getcwd()}\\Verilog\\testbranch.v"
     if(compiler == "iverilog"):
@@ -263,25 +263,25 @@ def generate_out_Verilog(setting):
 
 def Verilog(setting):
     """测试 Verilog"""
-    skip = setting[Const.SKIP]
+    skip = setting[Global.SKIP]
     if (skip == False):
-        if (setting[Const.FILE_PATH] == ""):
+        if (setting[Global.FILE_PATH] == ""):
             generate_instruction(setting)
         else:
-            Base.run(["copy", setting[Const.FILE_PATH], setting[Const.ASM_PATH]])
+            Base.run(["copy", setting[Global.FILE_PATH], setting[Global.ASM_PATH]])
             generate_code_Verilog(setting)
     generate_out_Verilog(setting)
 
 
 def generate_md5(setting,last_str):
     """生成 MD5 文件"""
-    file_md5_path = setting[Const.FILE_MD5]
-    code_md5_path = setting[Const.CODE_MD5]
-    std_md5_path = setting[Const.STD_MD5]
-    last_md5_path = setting[Const.LAST_MD5]
-    file_path = setting[Const.FILE_PATH]
-    code_path = setting[Const.CODE_PATH]
-    std_path = setting[Const.STD_PATH]
+    file_md5_path = setting[Global.FILE_MD5]
+    code_md5_path = setting[Global.CODE_MD5]
+    std_md5_path = setting[Global.STD_MD5]
+    last_md5_path = setting[Global.LAST_MD5]
+    file_path = setting[Global.FILE_PATH]
+    code_path = setting[Global.CODE_PATH]
+    std_path = setting[Global.STD_PATH]
     with open(file_path, "r", encoding="utf-8") as fp:
         file_str = fp.read()
         file_md5 = hashlib.md5(file_str.encode("utf-8")).hexdigest()

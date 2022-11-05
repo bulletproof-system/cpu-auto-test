@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-26 20:19:34
 LastEditors: ltt
-LastEditTime: 2022-10-30 17:40:55
+LastEditTime: 2022-11-05 23:19:55
 FilePath: Generator.py
 '''
 from __future__ import barry_as_FLUFL
@@ -12,20 +12,20 @@ import hashlib, re, json, os
 from pyexpat.errors import codes
 
 import modules.Base as Base
-import modules.Constants as Const
+import modules.Global as Global
 import modules.Decode as Decode
 
 
-def generate_instruction(setting):
+def generate_instruction():
     """生成指令"""
     pass
 
-def generate_code_Logisim(setting):
+def generate_code_Logisim():
     """生成 Logisim 机器码和标准输出"""
     """生成机器码"""
-    asm, mars = setting[Const.ASM_PATH], setting[Const.MARS_PATH]
-    code_path = setting[Const.CODE_PATH]
-    debug = setting[Const.DEBUG]
+    asm, mars = Global.ASM_PATH, Global.MARS_PATH
+    code_path = Global.CODE_PATH
+    debug = Global.DEBUG
     data, text = "temp\\data.txt", "temp\\text.txt"
     if(debug): print("generating code (Logisim)")
     Base.run(["java", "-jar", mars, "me", "nc", "mc",
@@ -37,14 +37,14 @@ def generate_code_Logisim(setting):
     with open(text, "r") as TextAtZeroFile:
         TextAtZero = TextAtZeroFile.readlines()
     codes = Decode.merge(DataAtZero, TextAtZero,
-                         setting[Const.INSTRUCTION_LIST])
+                         Global.INSTRUCTION_LIST)
     with open(code_path, "w") as code_file:
         code_file.write("v2.0 raw\n")
         code_file.writelines(codes)  # 合并后机器码储存在 code_path 对应文件中
     if(debug): print("generating code finish (Logisim)")
     """生成标准输出"""
-    max_exe = setting[Const.EXECUTION_TIME]
-    std_path = setting[Const.STD_PATH]
+    max_exe = Global.EXECUTION_TIME
+    std_path = Global.STD_PATH
     codes += ["00000000"]
     std = []
     if(debug): print("generating std (Logisim)")
@@ -60,7 +60,7 @@ def generate_code_Logisim(setting):
         if(debug): print(f"generating {str}")
         
         # 根据指令获取输出
-        attr,code = Decode.findInList(instr, setting[Const.INSTRUCTION_LIST]),Decode.toBin(instr)
+        attr,code = Decode.findInList(instr, Global.INSTRUCTION_LIST),Decode.toBin(instr)
         ans["code"] = code
         if (attr["RegWrite"] == True):
             ans["RegWrite"] = True
@@ -80,19 +80,19 @@ def generate_code_Logisim(setting):
         std_file.write(json.dumps(std, sort_keys=False, indent=4, separators=(',', ': ')))
     if(debug): print("generating std finish (Logisim)")
     return
-def generate_out_Logisim(setting):
+def generate_out_Logisim():
     """获取 Logisim 输出文件"""
-    debug = setting[Const.DEBUG]
-    test_path, test_circ = setting[Const.TEST_PATH], setting[Const.TEST_CIRC]
-    logisim = setting[Const.LOGISIM_PATH]
-    code_path, out_path = setting[Const.CODE_PATH], setting[Const.OUT_PATH]
+    debug = Global.DEBUG
+    test_path, test_circ = Global.TEST_PATH, Global.TEST_CIRC
+    logisim = Global.LOGISIM_PATH
+    code_path, out_path = Global.CODE_PATH, Global.OUT_PATH
     if(debug): print("generating out (Logisim)")
     Base.run(["copy", test_path, test_circ])
     with open(test_circ, "r+") as fp:
         with open(code_path, "r") as code_file:
             code_str = code_file.readlines()[1:]
             circ_str = fp.read()
-            rom_str = re.search(Const.ROM, circ_str)
+            rom_str = re.search(Global.ROM, circ_str)
             if (rom_str == None):
                 print("无 ROM 组件")
                 raise RuntimeError
@@ -100,7 +100,7 @@ def generate_out_Logisim(setting):
             rom_str = re.sub(r"\n([0-9a-zA-Z ]*\n*)*</a>",
                              f"\n{' '.join(code_str)}</a>", rom_str.group())
             # print(rom_str)
-            circ_str = re.sub(Const.ROM, rom_str, circ_str)
+            circ_str = re.sub(Global.ROM, rom_str, circ_str)
             fp.seek(0, 0)
             fp.truncate()
             fp.write(circ_str)
@@ -127,35 +127,35 @@ def generate_out_Logisim(setting):
                        indent=4, separators=(',', ': ')))
     if(debug): print("generating out finish (Logisim)")
     return
-def Logisim(setting):
+def Logisim():
     """测试 Logisim"""
-    skip = setting[Const.SKIP]
+    skip = Global.SKIP
     if (skip == False):
-        if (setting[Const.FILE_PATH] == ""):
-            generate_instruction(setting)
+        if (Global.FILE_PATH == ""):
+            generate_instruction()
         else:
-            Base.run(["copy", setting[Const.FILE_PATH], setting[Const.ASM_PATH]])
-            generate_code_Logisim(setting)
-    generate_out_Logisim(setting)
+            Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
+            generate_code_Logisim()
+    generate_out_Logisim()
 
 
-def generate_code_Verilog(setting):
-    """生成 Verilog 机器码和标准输出"""
+def generate_code_Single_Cycle():
+    """生成单周期机器码和标准输出"""
     """生成机器码"""
-    asm, mars = setting[Const.ASM_PATH], setting[Const.MARS_PATH]
-    code_path = setting[Const.CODE_PATH]
-    debug = setting[Const.DEBUG]
-    if(debug): print("generating code (Verilog)")
+    asm, mars = Global.ASM_PATH, Global.MARS_PATH
+    code_path = Global.CODE_PATH
+    debug = Global.DEBUG
+    if(debug): print("generating code (Single_Cycle)")
     Base.run(["java", "-jar", mars, "me", "nc", "mc", "CompactDataAtZero", "dump", ".text", "HexText", code_path, asm])
     with open(code_path, "r") as code_file:
         codes = code_file.readlines()
-    if(debug): print("generating code finish(Verilog)")
+    if(debug): print("generating code finish(Single_Cycle)")
     """生成标准输出"""
-    max_exe = setting[Const.EXECUTION_TIME]
-    std_path = setting[Const.STD_PATH]
+    max_exe = Global.EXECUTION_TIME
+    std_path = Global.STD_PATH
     codes += ["00000000"]
     std = []
-    if(debug): print("generating std (Verilog)")
+    if(debug): print("generating std (Single_Cycle)")
     ret = Base.run(["java","-jar",mars,"me","nc","std","mc","CompactDataAtZero",asm]).split('\n')
     for str in ret:
         ans = {}
@@ -167,12 +167,13 @@ def generate_code_Verilog(setting):
         if(debug): print(f"generating {str}")
         
         # 根据指令获取输出
-        attr,code = Decode.findInList(instr, setting[Const.INSTRUCTION_LIST]),Decode.toBin(instr)
+        attr,code = Decode.findInList(instr, Global.INSTRUCTION_LIST),Decode.toBin(instr)
         ans["code"] = code
         if (attr["RegWrite"] == True):
             ans["RegWrite"] = True
             ans["RegAddr"] = str[34:36]
             ans["RegData"] = "0x"+str[40:48]
+            if(ans["RegAddr"] == " 0"): continue # 过滤 $0 寄存器
         else:
             ans["RegWrite"] = False   
         if (attr["MemWrite"] == True):
@@ -186,17 +187,17 @@ def generate_code_Verilog(setting):
             std.append(ans)
     with open(std_path, "w") as std_file:
         std_file.write(json.dumps(std, sort_keys=False, indent=4, separators=(',', ': ')))
-    if(debug): print("generating code finish (Verilog)")    
+    if(debug): print("generating code finish (Single_Cycle)")    
     return
-def generate_out_Verilog(setting):
-    """获取 Verilog 输出文件"""
-    debug = setting[Const.DEBUG]
-    compiler,argv = setting[Const.COMPILER_TYPE],setting[Const.COMPILER_ARGV]
-    test_path,out_path = setting[Const.TEST_PATH],setting[Const.OUT_PATH]
-    code_path = f"{os.getcwd()}\\" + setting[Const.CODE_PATH]
+def generate_out_Single_Cycle():
+    """获取单周期 CPU 输出文件"""
+    debug = Global.DEBUG
+    compiler,argv = Global.COMPILER_TYPE,Global.COMPILER_ARGV
+    test_path,out_path = Global.TEST_PATH,Global.OUT_PATH
+    code_path = f"{os.getcwd()}\\" + Global.CODE_PATH
     temp = f"{os.getcwd()}\\temp\\out"
-    test_branch = f"{os.getcwd()}\\Verilog\\testbranch.v"
-    if(debug): print("generating out (Verilog)")
+    test_branch = f"{os.getcwd()}\\Single_Cycle\\testbranch.v"
+    if(debug): print("generating out (Single_Cycle)")
     if(compiler == "iverilog"):
         (test_path, test_name) = os.path.split(test_path)
         Base.run(["cd",test_path,"&&","copy",code_path,"code.txt"])
@@ -214,6 +215,7 @@ def generate_out_Verilog(setting):
                 ans["MemWrite"] = False
                 ans["RegAddr"] = s[12:14]
                 ans["RegData"] = "0x"+s[-10:-2]
+                if(ans["RegAddr"] == " 0"): continue # 过滤 $0 寄存器
             else:
                 ans["MemWrite"] = True
                 ans["RegWrite"] = False
@@ -226,16 +228,84 @@ def generate_out_Verilog(setting):
     else:
         pass
 
-    if(debug): print("generating out finish (Verilog)")
+    if(debug): print("generating out finish (Single_Cycle)")
     return
-def Verilog(setting):
-    """测试 Verilog"""
-    skip = setting[Const.SKIP]
+def Single_Cycle():
+    """测试单周期CPU"""
+    skip = Global.SKIP
     if (skip == False):
-        if (setting[Const.FILE_PATH] == ""):
-            generate_instruction(setting)
+        if (Global.FILE_PATH == ""):
+            generate_instruction()
         else:
-            Base.run(["copy", setting[Const.FILE_PATH], setting[Const.ASM_PATH]])
-            generate_code_Verilog(setting)
-    generate_out_Verilog(setting)
+            Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
+            generate_code_Single_Cycle()
+    generate_out_Single_Cycle()
             
+            
+def generate_code_PipeLine():
+    """生成流水线机器码和标准输出"""
+    """生成机器码"""
+    asm, mars = Global.ASM_PATH, Global.MARS_PATH
+    code_path = Global.CODE_PATH
+    debug = Global.DEBUG
+    if(debug): print("generating code (PipeLine)")
+    Base.run(["java", "-jar", mars,"db", "me", "nc", "mc", "CompactDataAtZero", "dump", ".text", "HexText", code_path, asm])
+    with open(code_path, "r") as code_file:
+        codes = code_file.readlines()
+    if(debug): print("generating code finish(Single_Cycle)")
+    """生成标准输出"""
+    max_exe = Global.EXECUTION_TIME
+    std_path = Global.STD_PATH
+    codes += ["00000000"]
+    std = []
+    if(debug): print("generating std (PipeLine)")
+    ret = Base.run(["java","-jar",mars,"db","me","nc","std","mc","CompactDataAtZero",asm]).split('\n')
+    for str in ret:
+        ans = {}
+        if(str[0:2] != "pc"): continue
+        # 获取 pc 及指令
+        pc = ans["pc"] = "0x"+str[6:14]
+        instr = ans["instr"] = str[24:32]
+        ans["asm"] = re.search("asm:[^\r^\n]*",str).group()[5:]
+        if(debug): print(f"generating {str}")
+        
+        # 根据指令获取输出
+        attr,code = Decode.findInList(instr, Global.INSTRUCTION_LIST),Decode.toBin(instr)
+        ans["code"] = code
+        if (attr["RegWrite"] == True):
+            ans["RegWrite"] = True
+            ans["RegAddr"] = str[34:36]
+            ans["RegData"] = "0x"+str[40:48]
+            if(ans["RegAddr"] == " 0"): continue # 过滤 $0 寄存器
+        else:
+            ans["RegWrite"] = False   
+        if (attr["MemWrite"] == True):
+            ans["MemWrite"] = True
+            ans["MemAddr"] = str[34:44]
+            ans["MemData"] = "0x"+str[48:56]
+        else:
+            ans["MemWrite"] = False
+    
+        if (attr["RegWrite"] or attr["MemWrite"]):
+            std.append(ans)
+    with open(std_path, "w") as std_file:
+        std_file.write(json.dumps(std, sort_keys=False, indent=4, separators=(',', ': ')))
+    if(debug): print("generating code finish (PipeLine)")    
+    return
+    
+    pass
+
+def generate_out_PipeLine():
+    pass
+            
+def PipeLine():
+    """测试流水线CPU"""
+    skip = Global.SKIP
+    if (skip == False):
+        if (Global.FILE_PATH == ""):
+            generate_instruction()
+        else:
+            Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
+            generate_code_PipeLine()
+    generate_out_PipeLine()
+    pass
