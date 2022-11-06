@@ -72,7 +72,7 @@
 
 	- `public static int updateRegister(int num, int val)` 方法
 
-		更改寄存器时输出值，忽略 `$0` 寄存器的改变
+		更改寄存器时输出值
 
 		```java
 		if(Globals.outPutStd)

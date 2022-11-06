@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-23 10:45:14
 LastEditors: ltt
-LastEditTime: 2022-11-05 12:58:17
+LastEditTime: 2022-11-06 20:52:42
 FilePath: Decode.py
 '''
 
@@ -69,9 +69,9 @@ def load_setting(setting):
     Global.FILE_PATH = setting["FILE_PATH"]
     Global.INSTR_NUM = setting["INSTR_NUM"]
     Global.EXECUTION_TIME = setting["EXECUTION_TIME"]
-    Global.SKIP = setting["SKIP"]
-    Global.FORCE = setting["FORCE"]
-    Global.DEBUG = setting["DEBUG"]
+    Global.SKIP = (setting["SKIP"] == "true")
+    Global.FORCE = (setting["FORCE"] == "true")
+    Global.DEBUG = (setting["DEBUG"] == "true")
     Global.OUTPUT_DIR = setting["OUTPUT_DIR"]
     Global.ASM_NAME = setting["ASM_NAME"]
     Global.CODE_NAME  = setting["CODE_NAME"]
@@ -82,7 +82,7 @@ def load_setting(setting):
     Global.OUT_NAME  = setting["OUT_NAME"]
     Global.MARS_PATH  = setting["MARS_PATH"]
     Global.LOGISIM_PATH  = setting["LOGISIM_PATH"]
-    Global.DELAY_ENBLED  = setting["DELAY_ENBLED"]
+    Global.DELAY_ENBLED  = (setting["DELAY_ENBLED"] == "true")
     Global.COMPILER_TYPE  = setting["COMPILER_TYPE"]
     Global.COMPILER_ARGV  = setting["COMPILER_ARGV"]
     Global.TEST_TYPE  = setting["TEST_TYPE"]
@@ -159,7 +159,7 @@ def init_argv():
         if option in ("--logisim"):
             Global.LOGISIM_PATH = value
         if option in ("--delay-enbled"):
-            Global.DELAY_ENBLED = value
+            Global.DELAY_ENBLED = True
     Global.ASM_PATH = Global.OUTPUT_DIR+"\\"+Global.ASM_NAME
     Global.CODE_PATH = Global.OUTPUT_DIR+"\\"+Global.CODE_NAME
     Global.RESULT_PATH = f"{Global.OUTPUT_DIR}"+"\\"+Global.RESULT_NAME

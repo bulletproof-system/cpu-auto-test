@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-26 20:19:34
 LastEditors: ltt
-LastEditTime: 2022-11-06 20:14:32
+LastEditTime: 2022-11-06 21:14:27
 FilePath: Generator.py
 '''
 import re, json, os
@@ -25,9 +25,9 @@ def generate_code_Logisim():
     debug = Global.DEBUG
     data, text = "temp\\data.txt", "temp\\text.txt"
     if(debug): print("generating code (Logisim)")
-    Base.run(["java", "-jar", mars, "me", "nc", "mc",
+    Base.run(["java", "-jar", mars,"ae1", "me", "nc", "mc",
              "CompactDataAtZero", "dump", ".text", "HexText", data, asm])
-    Base.run(["java", "-jar", mars, "me", "nc", "mc",
+    Base.run(["java", "-jar", mars,"ae1", "me", "nc", "mc",
              "CompactTextAtZero", "dump", ".text", "HexText", text, asm])
     with open(data, "r") as DataAtZeroFile:
         DataAtZero = DataAtZeroFile.readlines()
@@ -143,7 +143,7 @@ def generate_code_Single_Cycle():
     code_path = Global.CODE_PATH
     debug = Global.DEBUG
     if(debug): print("generating code (Single_Cycle)")
-    Base.run(["java", "-jar", mars, "me", "nc", "mc", "CompactDataAtZero", "dump", ".text", "HexText", code_path, asm])
+    Base.run(["java", "-jar", mars,"ae1", "me", "nc", "mc", "CompactDataAtZero", "dump", ".text", "HexText", code_path, asm])
     with open(code_path, "r") as code_file:
         codes = code_file.readlines()
     if(debug): print("generating code finish(Single_Cycle)")
@@ -180,8 +180,8 @@ def generate_code_Single_Cycle():
         else:
             ans["MemWrite"] = False
     
-        if (attr["RegWrite"] or attr["MemWrite"]):
-            std.append(ans)
+        # if (attr["RegWrite"] or attr["MemWrite"]):
+        std.append(ans)
     with open(std_path, "w") as std_file:
         std_file.write(json.dumps(std, sort_keys=False, indent=4, separators=(',', ': ')))
     if(debug): print("generating code finish (Single_Cycle)")    
@@ -246,7 +246,7 @@ def generate_code_PipeLine():
     code_path = Global.CODE_PATH
     debug = Global.DEBUG
     if(debug): print("generating code (PipeLine)")
-    Base.run(["java", "-jar", mars,"db", "me", "nc", "mc", "CompactDataAtZero", "dump", ".text", "HexText", code_path, asm])
+    Base.run(["java", "-jar", mars,"ae1","db", "me", "nc", "mc", "CompactDataAtZero", "dump", ".text", "HexText", code_path, asm])
     with open(code_path, "r") as code_file:
         codes = code_file.readlines()
     if(debug): print("generating code finish(Single_Cycle)")
@@ -269,6 +269,7 @@ def generate_code_PipeLine():
         # 根据指令获取输出
         attr,code = Decode.findInList(instr, Global.INSTRUCTION_LIST),Decode.toBin(instr)
         ans["code"] = code
+        if(code == "0"*32): continue
         if (attr["RegWrite"] == True):
             ans["RegWrite"] = True
             ans["RegAddr"] = str[34:36]
@@ -283,8 +284,8 @@ def generate_code_PipeLine():
         else:
             ans["MemWrite"] = False
     
-        if (attr["RegWrite"] or attr["MemWrite"]):
-            std.append(ans)
+        # if (attr["RegWrite"] or attr["MemWrite"]):
+        std.append(ans)
     with open(std_path, "w") as std_file:
         std_file.write(json.dumps(std, sort_keys=False, indent=4, separators=(',', ': ')))
     if(debug): print("generating code finish (PipeLine)")    
