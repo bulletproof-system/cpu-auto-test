@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-26 20:22:43
 LastEditors: ltt
-LastEditTime: 2022-11-04 23:23:41
+LastEditTime: 2022-11-06 19:47:34
 FilePath: Comparator.py
 '''
 import json
@@ -77,7 +77,11 @@ def Verilog():
                 stds = json.load(std_file)
                 outs = json.load(out_file)
                 for i in range(len(stds)):
-                    std, out = stds[i], outs[i]
+                    try:
+                        std, out = stds[i], outs[i]
+                    except IndexError:
+                        print("The output is less than std")
+                        return
                     print("checking %s: %s" % (std["instr"], std["asm"]))
                     if(std["pc"] != out["pc"]):
                         print_wrong()

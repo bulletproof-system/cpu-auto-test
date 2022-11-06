@@ -2,7 +2,7 @@
  * @Author: ltt
  * @Date: 2022-10-16 14:42:06
  * @LastEditors: ltt
- * @LastEditTime: 2022-11-05 23:33:15
+ * @LastEditTime: 2022-11-06 20:37:16
  * @FilePath: RegisterFile.java
  */
    package mars.mips.hardware;
@@ -68,8 +68,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
          	new Register("$s6", 22, 0),new Register("$s7", 23, 0),
          	new Register("$t8", 24, 0),new Register("$t9", 25, 0),
          	new Register("$k0", 26, 0),new Register("$k1", 27, 0),
-         	new Register("$gp", GLOBAL_POINTER_REGISTER, Memory.globalPointer),
-         	new Register("$sp", STACK_POINTER_REGISTER, Memory.stackPointer),
+         	new Register("$gp", GLOBAL_POINTER_REGISTER, 0),
+         	// new Register("$gp", GLOBAL_POINTER_REGISTER, Memory.globalPointer),
+         	new Register("$sp", STACK_POINTER_REGISTER, 0),
+         	// new Register("$sp", STACK_POINTER_REGISTER, Memory.stackPointer),
          	new Register("$fp", 30, 0),new Register("$ra", 31, 0)
            };
          												  

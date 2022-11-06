@@ -2,14 +2,11 @@
 Author: ltt
 Date: 2022-10-26 20:19:34
 LastEditors: ltt
-LastEditTime: 2022-11-05 23:19:55
+LastEditTime: 2022-11-06 20:14:32
 FilePath: Generator.py
 '''
-from __future__ import barry_as_FLUFL
-from asyncio import base_tasks
-from distutils.log import debug
-import hashlib, re, json, os
-from pyexpat.errors import codes
+import re, json, os
+from functools import cmp_to_key
 
 import modules.Base as Base
 import modules.Global as Global
@@ -222,12 +219,12 @@ def generate_out_Single_Cycle():
                 ans["MemAddr"] = "0x"+s[12:20]
                 ans["MemData"] = "0x"+s[-10:-2]
             out.append(ans)
-        with open(out_path,"w") as out_file:
-            out_file.write(json.dumps(out, sort_keys=False,
-                           indent=4, separators=(',', ': ')))
+        
     else:
         pass
-
+    with open(out_path,"w") as out_file:
+        out_file.write(json.dumps(out, sort_keys=False,
+                        indent=4, separators=(',', ': ')))
     if(debug): print("generating out finish (Single_Cycle)")
     return
 def Single_Cycle():
@@ -293,10 +290,59 @@ def generate_code_PipeLine():
     if(debug): print("generating code finish (PipeLine)")    
     return
     
-    pass
+def comp(a, b):
+    """排序函数"""
+    if(int(a["time"]) < int(b["time"])): return -1
+    if(int(a["time"]) > int(b["time"])): return 1
+    if(a["RegWrite"]): return -1
+    if(b["RegWrite"]): return 1
+    return 0
 
 def generate_out_PipeLine():
-    pass
+    """获取流水线 CPU 输出文件"""
+    debug = Global.DEBUG
+    compiler,argv = Global.COMPILER_TYPE,Global.COMPILER_ARGV
+    test_path,out_path = Global.TEST_PATH,Global.OUT_PATH
+    code_path = f"{os.getcwd()}\\" + Global.CODE_PATH
+    temp = f"{os.getcwd()}\\temp\\out"
+    test_branch = f"{os.getcwd()}\\PipeLine\\testbranch.v"
+    if(debug): print("generating out (PipeLine)")
+    if(compiler == "iverilog"):
+        (test_path, test_name) = os.path.split(test_path)
+        Base.run(["cd",test_path,"&&","copy",code_path,"code.txt"])
+        ret = Base.run(["cd",test_path,
+                        "&&","iverilog",argv,"-o",temp,test_name,test_branch, 
+                        "&&", "vvp", temp], errdesc="编译错误")
+        match = re.findall(r"[0-9]*@.*\n",ret)
+        # print(match)
+        out = []
+        for s in match:
+            ans = {}
+            ans["time"] = re.search(r"[0-9]*@", s).group()[:-1]
+            if(re.search(r"@.{10}\$.{14}[\r\n]+", s) != None):
+                s = re.search(r"@.{10}\$.{14}[\r\n]+", s).group()
+                ans["pc"] = "0x"+s[1:9]
+                ans["RegWrite"] = True
+                ans["MemWrite"] = False
+                ans["RegAddr"] = s[12:14]
+                ans["RegData"] = "0x"+s[-10:-2]
+                if(ans["RegAddr"] == " 0"): continue # 过滤 $0 寄存器
+            else:
+                s = re.search(r"@.{10}\*.{20}[\r\n]+", s).group()
+                ans["pc"] = "0x"+s[1:9]
+                ans["MemWrite"] = True
+                ans["RegWrite"] = False
+                ans["MemAddr"] = "0x"+s[12:20]
+                ans["MemData"] = "0x"+s[-10:-2]
+            out.append(ans)
+    else:
+        pass
+    out.sort(key=cmp_to_key(comp))
+    with open(out_path,"w") as out_file:
+            out_file.write(json.dumps(out, sort_keys=False,
+                           indent=4, separators=(',', ': ')))
+    if(debug): print("generating out finish (PipeLine)")
+    return
             
 def PipeLine():
     """测试流水线CPU"""
