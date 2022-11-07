@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-26 20:19:34
 LastEditors: ltt
-LastEditTime: 2022-11-06 21:14:27
+LastEditTime: 2022-11-07 19:58:59
 FilePath: Generator.py
 '''
 import re, json, os
@@ -40,7 +40,6 @@ def generate_code_Logisim():
         code_file.writelines(codes)  # 合并后机器码储存在 code_path 对应文件中
     if(debug): print("generating code finish (Logisim)")
     """生成标准输出"""
-    max_exe = Global.EXECUTION_TIME
     std_path = Global.STD_PATH
     codes += ["00000000"]
     std = []
@@ -57,7 +56,7 @@ def generate_code_Logisim():
         if(debug): print(f"generating {str}")
         
         # 根据指令获取输出
-        attr,code = Decode.findInList(instr, Global.INSTRUCTION_LIST),Decode.toBin(instr)
+        attr,code = Decode.findInList(instr, Global.INSTRUCTION_DICT),Decode.toBin(instr)
         ans["code"] = code
         if (attr["RegWrite"] == True):
             ans["RegWrite"] = True
@@ -148,7 +147,6 @@ def generate_code_Single_Cycle():
         codes = code_file.readlines()
     if(debug): print("generating code finish(Single_Cycle)")
     """生成标准输出"""
-    max_exe = Global.EXECUTION_TIME
     std_path = Global.STD_PATH
     codes += ["00000000"]
     std = []
@@ -164,7 +162,7 @@ def generate_code_Single_Cycle():
         if(debug): print(f"generating {str}")
         
         # 根据指令获取输出
-        attr,code = Decode.findInList(instr, Global.INSTRUCTION_LIST),Decode.toBin(instr)
+        attr,code = Decode.findInList(instr, Global.INSTRUCTION_DICT),Decode.toBin(instr)
         ans["code"] = code
         if (attr["RegWrite"] == True):
             ans["RegWrite"] = True
@@ -238,7 +236,13 @@ def Single_Cycle():
             generate_code_Single_Cycle()
     generate_out_Single_Cycle()
             
-            
+def comp(a, b):
+    """排序函数"""
+    if(int(a["time"]) < int(b["time"])): return -1
+    if(int(a["time"]) > int(b["time"])): return 1
+    if(a["RegWrite"]): return -1
+    if(b["RegWrite"]): return 1
+    return 0       
 def generate_code_PipeLine():
     """生成流水线机器码和标准输出"""
     """生成机器码"""
@@ -249,9 +253,8 @@ def generate_code_PipeLine():
     Base.run(["java", "-jar", mars,"ae1","db", "me", "nc", "mc", "CompactDataAtZero", "dump", ".text", "HexText", code_path, asm])
     with open(code_path, "r") as code_file:
         codes = code_file.readlines()
-    if(debug): print("generating code finish(Single_Cycle)")
+    if(debug): print("generating code finish(PipeLine)")
     """生成标准输出"""
-    max_exe = Global.EXECUTION_TIME
     std_path = Global.STD_PATH
     codes += ["00000000"]
     std = []
@@ -267,7 +270,7 @@ def generate_code_PipeLine():
         if(debug): print(f"generating {str}")
         
         # 根据指令获取输出
-        attr,code = Decode.findInList(instr, Global.INSTRUCTION_LIST),Decode.toBin(instr)
+        attr,code = Decode.findInList(instr, Global.INSTRUCTION_DICT),Decode.toBin(instr)
         ans["code"] = code
         if(code == "0"*32): continue
         if (attr["RegWrite"] == True):
@@ -290,15 +293,6 @@ def generate_code_PipeLine():
         std_file.write(json.dumps(std, sort_keys=False, indent=4, separators=(',', ': ')))
     if(debug): print("generating code finish (PipeLine)")    
     return
-    
-def comp(a, b):
-    """排序函数"""
-    if(int(a["time"]) < int(b["time"])): return -1
-    if(int(a["time"]) > int(b["time"])): return 1
-    if(a["RegWrite"]): return -1
-    if(b["RegWrite"]): return 1
-    return 0
-
 def generate_out_PipeLine():
     """获取流水线 CPU 输出文件"""
     debug = Global.DEBUG
@@ -343,8 +337,7 @@ def generate_out_PipeLine():
             out_file.write(json.dumps(out, sort_keys=False,
                            indent=4, separators=(',', ': ')))
     if(debug): print("generating out finish (PipeLine)")
-    return
-            
+    return        
 def PipeLine():
     """测试流水线CPU"""
     skip = Global.SKIP

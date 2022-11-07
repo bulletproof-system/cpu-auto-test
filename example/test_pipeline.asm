@@ -2,22 +2,17 @@
 	stack: .space 1000
 
 .text
-	ori $2, $0, 3
-	sw $2, 0($0)
-	nop
-	lw $2, 0($0)
-	ori $3, $0, 3
-	jal dfs
-	sw $2, 0($0)
-	lw $2, 0($0)
-	lw $2, 0($0)
-	add $3, $3, $2
-	add $4, $2, $3
-	jal end
+case35:
+	ori $t0, $zero, 4
+	ori $t1, $zero, 8
+	ori $t2, $zero, 12
+	ori $t3, $zero, 16
+	sw $t0, 0($zero)
+	# nop
+	sw $t1, 0($t0)
+	sw $t2, 0($t1)
+	sw $t3, 4($t1)
 
-dfs:sub $4, $2, $3
-	jr $ra
-
-end:
-	sw $3, 0($0)
-	sw $4, 0($0)
+ occasionl7:	#ld_E_RS
+ 	lw $t4, 0($t0)
+ 	lw $t5, 0($t4)

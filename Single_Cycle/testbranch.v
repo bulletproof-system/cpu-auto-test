@@ -18,10 +18,10 @@ module tb;
 		// $dumpvars();
 		clk = 0;
 		reset = 1;
-		#30 reset = 0;
+		#15 reset = 0;
 
-		#4000 $finish;
+		#20000 $finish;
 	end
-    always #20 clk = ~clk;
+    always #10 clk = ~clk;
 endmodule
 

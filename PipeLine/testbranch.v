@@ -9,11 +9,11 @@ module tb (
 		$dumpvars();
 		clk = 0;
 		reset = 1;
-		#30 reset = 0;
+		#15 reset = 0;
 
 
-		#4000 $finish;
+		#100000 $finish;
 	end
 	mips mips(.clk(clk), .reset(reset));
-	always #20 clk = ~clk;
+	always #10 clk = ~clk;
 endmodule //tb

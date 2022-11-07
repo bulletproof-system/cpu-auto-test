@@ -2,10 +2,12 @@
 Author: ltt
 Date: 2022-10-26 20:16:07
 LastEditors: ltt
-LastEditTime: 2022-10-26 23:19:59
+LastEditTime: 2022-11-07 20:38:27
 FilePath: Base.py
 '''
 import subprocess
+
+import modules.Global as Global
 
 def run(command, desc=None, errdesc=None):
     """调用命令"""

@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-23 10:45:14
 LastEditors: ltt
-LastEditTime: 2022-11-06 20:52:42
+LastEditTime: 2022-11-07 19:42:19
 FilePath: Decode.py
 '''
 
@@ -37,12 +37,13 @@ def findInList(instr,instructions):
     code = toBin(instr)
     opcode  = code[::-1][26:32][::-1]
     funct   = code[::-1][0:6][::-1]
-    for x in instructions:
-        if x["opcode"] == opcode:
+    for key, value in instructions.items():
+        if value["opcode"] == opcode:
             if opcode == "000000":
-                if x["funct"] != funct:
+                if value["funct"] != funct:
                     continue
-            return x
+            if (key == "nop" and code != "0"*32): continue
+            return value
     message = f"指令集中找不到对应指令 {instr} {code}"
     raise RuntimeError(message) 
 
@@ -66,9 +67,9 @@ def signextend(code):
         return int(code, 2)
 
 def load_setting(setting):
+    """加载配置"""
     Global.FILE_PATH = setting["FILE_PATH"]
     Global.INSTR_NUM = setting["INSTR_NUM"]
-    Global.EXECUTION_TIME = setting["EXECUTION_TIME"]
     Global.SKIP = (setting["SKIP"] == "true")
     Global.FORCE = (setting["FORCE"] == "true")
     Global.DEBUG = (setting["DEBUG"] == "true")
@@ -86,8 +87,10 @@ def load_setting(setting):
     Global.COMPILER_TYPE  = setting["COMPILER_TYPE"]
     Global.COMPILER_ARGV  = setting["COMPILER_ARGV"]
     Global.TEST_TYPE  = setting["TEST_TYPE"]
-    Global.INSTRUCTION_LIST  = setting["INSTRUCTION_LIST"]
-    # Global.  = ""]
+    Global.CLASSIFY = setting["CLASSIFY"]
+    Global.INSTRUCTION_DICT  = setting["INSTRUCTION_DICT"]
+    # Global = setting[""]
+    construct_instruction_dict()
     
 def init_argv():
     """读取参数"""
@@ -128,8 +131,6 @@ def init_argv():
             Global.FILE_PATH = value
         if option in ("-n","--number"):
             Global.INSTR_NUM = value
-        if option in ("-m","--max-execution"):
-            Global.EXECUTION_TIME = value
         if option in ("-b"):
             Global.SKIP = True
         if option == "--force":
@@ -183,5 +184,15 @@ def get_file_md5(file_path):
         file_md5 = hashlib.md5(file_str.encode("utf-8")).hexdigest()
     return file_md5
 
+def construct_instruction_dict():
+    """构造指令字典"""
+    for instr_name, instr_value in Global.INSTRUCTION_DICT.items():
+        for class_name, class_value  in Global.CLASSIFY.items():
+            if instr_name in class_value["include"]:
+                instr_value["class"] = class_name
+                instr_value["RegWrite"] = class_value["RegWrite"]
+                instr_value["MemWrite"] = class_value["MemWrite"]
+                instr_value["jump"] = class_value["jump"]
+    
 if __name__ == "__main__":
 	print(signextend("1111001100"))

@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-22 22:12:33
 LastEditors: ltt
-LastEditTime: 2022-11-05 12:56:52
+LastEditTime: 2022-11-07 20:47:47
 FilePath: auto_test.py
 '''
 import re
@@ -34,7 +34,6 @@ def main():
     Decode.init_argv() # 读取参数
     test_env()  # 测试环境
     
-    test_path = Global.TEST_PATH
     test_type = Global.TEST_TYPE
     if(test_type == "Logisim"):
         Generator.Logisim()

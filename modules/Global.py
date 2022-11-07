@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-22 22:17:45
 LastEditors: ltt
-LastEditTime: 2022-11-06 19:41:09
+LastEditTime: 2022-11-07 16:56:32
 FilePath: Global.py
 '''
 
@@ -12,7 +12,6 @@ longopts = ["help","filename=","number=","max-execution=","force","debug","outpu
             "logisim=","delay-enbled","default-setting="]
 FILE_PATH = "FILE_PATH"
 INSTR_NUM = "INSTR_NUM"
-EXECUTION_TIME = "EXECUTION_TIME"
 SKIP = "SKIP"
 FORCE = "FORCE"
 DEBUG = "DEBUG"
@@ -34,7 +33,9 @@ LOGISIM_PATH = "LOGISIM_PATH"
 DELAY_ENBLED = "DELAY_ENBLED"
 COMPILER_TYPE = "COMPILER_TYPE"
 COMPILER_ARGV = "COMPILER_ARGV"
-INSTRUCTION_LIST = "INSTRUCTION_LIST"
+CLASSIFY = {}
+ENBLED_INSTRUCTION = []
+INSTRUCTION_DICT = {}
 TEST_TYPE = "TEST_TYPE"
 ROM =r"""<comp lib=\"4\" loc=\"\([0-9]*,[0-9]*\)\" name=\"ROM\">
       <a name=\"addrWidth\" val=\"[0-9]*\"\/>
