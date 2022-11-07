@@ -17,19 +17,6 @@
 
    - 处理命令行参数
    - 指定指令测试
-   - 生成指令并测试(未实现)
-
-     - 加载可用指令列表以及指令模板
-     - 确定生成指令个数
-     - 确定指令执行次数
-2. 随机生成指令(未实现)
-
-   - 寄存器运算指令
-     - 避免使用未初始化的寄存器
-   - 与立即数运算的指令
-     - 增大边界数据生成权重
-   - 跳转指令
-     - 随机生成易导致死循环，一般进行独立测试或套用模板
 3. Mars 编译指令为机器码并得到标准输出
 4. 导入 Logisim/Verilog 并测试
 5. 比对输出数据和标准输出数据
@@ -43,6 +30,8 @@
   - 使用 `n<number>` 指定最大仿真步数
   - 输入 `$pc` 以获取 `pc` 的值
   - 输入 `std` 可以打印每条指令的执行信息
+  - 忽略 `add` 和 `sub` 溢出
+  - 寄存器堆中所有寄存器初值都为 `0` 
   - 修改内容见 [Mars 修改方案](Mars/Mars 修改方案.md)
 - Logisim.jar
   - 没有改动
@@ -105,7 +94,7 @@
   |       `--out`       |    OUT_NAME    |   out.json   |               测试程序输出结果               |
   |       `--mars`       |    MARS_PATH    | Mars\Mars.jar |                  Mars 路径                  |
   |     `--logisim`     |  LOGISIM_PATH  |  logisim.jar  |                 Logisim 路径                 |
-  |   `--jump-enbled`   |   JUMP_ENBLED   |     false     |               是否生成跳转指令               |
+  |   `--delay-enbled`   |   DELAY_ENBLED   |     false     |               是否启用延迟槽               |
   | `--default-setting` | DEFAULT_SETTING | setting.json | 如果指定将使用文件中的配置并忽略其他所有参数 |
 
 
@@ -116,108 +105,8 @@
 
   - 同上
   - ```json
-      "INSTRUCTION_LIST" : [
-          {
-              "name" : "add",
-              "opcode" : "000000",
-              "funct" : "100000",
-              "RegWrite" : true,
-              "RegAddr" : ["rd"],
-              "MemWrite" : false,
-              "jump" : false,
-              "weight" : 2
-          },
-          {
-              "name" : "sub",
-              "opcode" : "000000",
-              "funct" : "100010",
-              "RegWrite" : true,
-              "RegAddr" : ["rd"],
-              "MemWrite" : false,
-              "jump" : false,
-              "weight" : 2
-          },
-          {
-              "name" : "ori",
-              "opcode" : "001101",
-              "RegWrite" : true,
-              "RegAddr" : ["rt"],
-              "MemWrite" : false,
-              "jump" : false,
-              "weight" : 2
-          },
-          {
-              "name" : "lw",
-              "opcode" : "100011",
-              "RegWrite" : true,
-              "RegAddr" : ["rt"],
-              "MemWrite" : false,
-              "jump" : false,
-              "weight" : 2
-          },
-          {
-              "name" : "sw",
-              "opcode" : "101011",
-              "RegWrite" : false,
-              "MemWrite" : true,
-              "MemAddr" : ["rt","offset"],
-              "jump" : false,
-              "weight" : 2
-          },
-          {
-              "name" : "beq",
-              "opcode" : "000100",
-              "RegWrite" : false,
-              "MemWrite" : false,
-              "jump" : true,
-              "weight" : 2
-          },
-          {
-              "name" : "lui",
-              "opcode" : "001111",
-              "RegWrite" : true,
-              "RegAddr" : ["rt"],
-              "MemWrite" : false,
-              "jump" : false,
-              "weight" : 2
-          },
-          {
-              "name" : "nop",
-              "opcode" : "000000",
-              "funct" : "000000",
-              "RegWrite" : false,
-              "MemWrite" : false,
-              "jump" : false,
-              "weight" : 1
-          },
-          {
-              "name" : "j",
-              "opcode" : "000010",
-              "RegWrite" : false,
-              "MemWrite" : false,
-              "jump" : true,
-              "weight" : 1
-          },
-          {
-              "name" : "jal",
-              "opcode" : "000011",
-              "RegWrite" : true,
-              "RegAddr" : ["pc"],
-              "MemWrite" : false,
-              "jump" : true,
-              "weight" : 1
-          },
-          {
-              "name" : "jr",
-              "opcode" : "000000",
-              "funct" : "001000",
-              "RegWrite" : false,
-              "MemWrite" : false,
-              "jump" : true,
-              "weight" : 1
-          }
-      ]
-    ```
+      "INSTRUCTION_LIST" : [...]
+      ```
 
 ### 根据 `FILE_PATH` 有无判断是否生成指令
 
@@ -330,9 +219,15 @@ pass
 
 - 还没完全测试过
 - 没有实现汇编代码自动生成，只支持用现有的汇编文件测试
-- 由于有时候 Mars 在出错时返回值是 0 可能导致程序继续进行而不终止
+- ~~由于有时候 Mars 在出错时返回值是 0 可能导致程序继续进行而不终止~~
 
 ## 7 Update
+
+### `2022-11-6`
+
+- 增加对流水线 CPU 的对拍功能，使用 `--delay-enbled` 参数
+- Mars 寄存器初值全为 0
+- Mars 编译错误时会结束程序
 
 ### `2022-10-30`
 
