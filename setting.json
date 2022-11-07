@@ -1,6 +1,6 @@
 {
 	"FILE_PATH" : null,
-	"INSTR_NUM" : 32,
+	"TEST_NUM" : 100,
 	"SKIP" : false,
 	"FORCE" : false,
 	"DEBUG" : false,

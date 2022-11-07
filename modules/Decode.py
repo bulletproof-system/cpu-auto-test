@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-23 10:45:14
 LastEditors: ltt
-LastEditTime: 2022-11-07 19:42:19
+LastEditTime: 2022-11-07 23:35:15
 FilePath: Decode.py
 '''
 
@@ -69,7 +69,7 @@ def signextend(code):
 def load_setting(setting):
     """加载配置"""
     Global.FILE_PATH = setting["FILE_PATH"]
-    Global.INSTR_NUM = setting["INSTR_NUM"]
+    Global.TEST_NUM = setting["TEST_NUM"]
     Global.SKIP = (setting["SKIP"] == "true")
     Global.FORCE = (setting["FORCE"] == "true")
     Global.DEBUG = (setting["DEBUG"] == "true")
@@ -130,7 +130,7 @@ def init_argv():
         if option in ("-f","--filename"):
             Global.FILE_PATH = value
         if option in ("-n","--number"):
-            Global.INSTR_NUM = value
+            Global.TEST_NUM = value
         if option in ("-b"):
             Global.SKIP = True
         if option == "--force":
@@ -186,13 +186,16 @@ def get_file_md5(file_path):
 
 def construct_instruction_dict():
     """构造指令字典"""
-    for instr_name, instr_value in Global.INSTRUCTION_DICT.items():
-        for class_name, class_value  in Global.CLASSIFY.items():
+    for class_name, class_value  in Global.CLASSIFY.items():
+        class_value["enbled"] = []
+        for instr_name, instr_value in Global.INSTRUCTION_DICT.items():
             if instr_name in class_value["include"]:
+                class_value["enbled"].append(instr_name)
                 instr_value["class"] = class_name
                 instr_value["RegWrite"] = class_value["RegWrite"]
                 instr_value["MemWrite"] = class_value["MemWrite"]
                 instr_value["jump"] = class_value["jump"]
+                
     
 if __name__ == "__main__":
 	print(signextend("1111001100"))

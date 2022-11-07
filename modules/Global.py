@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-22 22:17:45
 LastEditors: ltt
-LastEditTime: 2022-11-07 16:56:32
+LastEditTime: 2022-11-07 21:26:47
 FilePath: Global.py
 '''
 
@@ -11,7 +11,7 @@ longopts = ["help","filename=","number=","max-execution=","force","debug","outpu
             "asm=","code=","result=","test=","compiler=","argv=","std=","out=","mars=",
             "logisim=","delay-enbled","default-setting="]
 FILE_PATH = "FILE_PATH"
-INSTR_NUM = "INSTR_NUM"
+TEST_NUM = "TEST_NUM"
 SKIP = "SKIP"
 FORCE = "FORCE"
 DEBUG = "DEBUG"
