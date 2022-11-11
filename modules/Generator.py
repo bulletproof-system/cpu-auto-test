@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-26 20:19:34
 LastEditors: ltt
-LastEditTime: 2022-11-07 19:58:59
+LastEditTime: 2022-11-10 22:49:43
 FilePath: Generator.py
 '''
 import re, json, os
@@ -135,23 +135,23 @@ def Logisim():
     generate_out_Logisim()
 
 
-def generate_code_Single_Cycle():
+def generate_code_P4():
     """生成单周期机器码和标准输出"""
     """生成机器码"""
     asm, mars = Global.ASM_PATH, Global.MARS_PATH
     code_path = Global.CODE_PATH
     debug = Global.DEBUG
-    if(debug): print("generating code (Single_Cycle)")
-    Base.run(["java", "-jar", mars,"ae1", "me", "nc", "mc", "CompactDataAtZero", "dump", ".text", "HexText", code_path, asm])
+    if(debug): print("generating code (P4)")
+    Base.run(["java", "-jar", mars,"ignore","ae1", "me", "nc", "mc", "CompactDataAtZero", "dump", ".text", "HexText", code_path, asm])
     with open(code_path, "r") as code_file:
         codes = code_file.readlines()
-    if(debug): print("generating code finish(Single_Cycle)")
+    if(debug): print("generating code finish(P4)")
     """生成标准输出"""
     std_path = Global.STD_PATH
     codes += ["00000000"]
     std = []
-    if(debug): print("generating std (Single_Cycle)")
-    ret = Base.run(["java","-jar",mars,"me","nc","std","mc","CompactDataAtZero",asm]).split('\n')
+    if(debug): print("generating std (P4)")
+    ret = Base.run(["java","-jar",mars,"ignore","ae1","me","nc","std","mc","CompactDataAtZero",asm]).split('\n')
     for str in ret:
         ans = {}
         if(str[0:2] != "pc"): continue
@@ -182,17 +182,17 @@ def generate_code_Single_Cycle():
         std.append(ans)
     with open(std_path, "w") as std_file:
         std_file.write(json.dumps(std, sort_keys=False, indent=4, separators=(',', ': ')))
-    if(debug): print("generating code finish (Single_Cycle)")    
+    if(debug): print("generating code finish (P4)")    
     return
-def generate_out_Single_Cycle():
-    """获取单周期 CPU 输出文件"""
+def generate_out_P4():
+    """获取P4 CPU 输出文件"""
     debug = Global.DEBUG
     compiler,argv = Global.COMPILER_TYPE,Global.COMPILER_ARGV
     test_path,out_path = Global.TEST_PATH,Global.OUT_PATH
     code_path = f"{os.getcwd()}\\" + Global.CODE_PATH
     temp = f"{os.getcwd()}\\temp\\out"
-    test_branch = f"{os.getcwd()}\\Single_Cycle\\testbranch.v"
-    if(debug): print("generating out (Single_Cycle)")
+    test_branch = f"{os.getcwd()}\\Verilog\\P4.v"
+    if(debug): print("generating out (P4)")
     if(compiler == "iverilog"):
         (test_path, test_name) = os.path.split(test_path)
         Base.run(["cd",test_path,"&&","copy",code_path,"code.txt"])
@@ -223,9 +223,9 @@ def generate_out_Single_Cycle():
     with open(out_path,"w") as out_file:
         out_file.write(json.dumps(out, sort_keys=False,
                         indent=4, separators=(',', ': ')))
-    if(debug): print("generating out finish (Single_Cycle)")
+    if(debug): print("generating out finish (P4)")
     return
-def Single_Cycle():
+def P4():
     """测试单周期CPU"""
     skip = Global.SKIP
     if (skip == False):
@@ -233,8 +233,8 @@ def Single_Cycle():
             generate_instruction()
         else:
             Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
-            generate_code_Single_Cycle()
-    generate_out_Single_Cycle()
+            generate_code_P4()
+    generate_out_P4()
             
 def comp(a, b):
     """排序函数"""
@@ -243,30 +243,30 @@ def comp(a, b):
     if(a["RegWrite"]): return -1
     if(b["RegWrite"]): return 1
     return 0       
-def generate_code_PipeLine():
-    """生成流水线机器码和标准输出"""
+def generate_code_P5():
+    """生成 P5 机器码和标准输出"""
     """生成机器码"""
     asm, mars = Global.ASM_PATH, Global.MARS_PATH
     code_path = Global.CODE_PATH
     debug = Global.DEBUG
-    if(debug): print("generating code (PipeLine)")
-    Base.run(["java", "-jar", mars,"ae1","db", "me", "nc", "mc", "CompactDataAtZero", "dump", ".text", "HexText", code_path, asm])
+    if(debug): print("generating code (P5)")
+    Base.run(["java", "-jar", mars,"ignore","ae1","db", "me", "nc", "mc", "CompactDataAtZero", "dump", ".text", "HexText", code_path, asm])
     with open(code_path, "r") as code_file:
         codes = code_file.readlines()
-    if(debug): print("generating code finish(PipeLine)")
+    if(debug): print("generating code finish(P5)")
     """生成标准输出"""
     std_path = Global.STD_PATH
     codes += ["00000000"]
     std = []
-    if(debug): print("generating std (PipeLine)")
-    ret = Base.run(["java","-jar",mars,"db","me","nc","std","mc","CompactDataAtZero",asm]).split('\n')
+    if(debug): print("generating std (P5)")
+    ret = Base.run(["java","-jar",mars,"ignore","ae1","db","me","nc","std","mc","CompactDataAtZero",asm]).split('\n')
     for str in ret:
         ans = {}
         if(str[0:2] != "pc"): continue
         # 获取 pc 及指令
         pc = ans["pc"] = "0x"+str[6:14]
         instr = ans["instr"] = str[24:32]
-        ans["asm"] = re.search("asm:[^\r^\n]*",str).group()[5:]
+        ans["asm"] = re.search(r"asm:[^\r^\n]*",str).group()[5:]
         if(debug): print(f"generating {str}")
         
         # 根据指令获取输出
@@ -291,17 +291,17 @@ def generate_code_PipeLine():
         std.append(ans)
     with open(std_path, "w") as std_file:
         std_file.write(json.dumps(std, sort_keys=False, indent=4, separators=(',', ': ')))
-    if(debug): print("generating code finish (PipeLine)")    
+    if(debug): print("generating code finish (P5)")    
     return
-def generate_out_PipeLine():
-    """获取流水线 CPU 输出文件"""
+def generate_out_P5():
+    """获取P5 CPU 输出文件"""
     debug = Global.DEBUG
     compiler,argv = Global.COMPILER_TYPE,Global.COMPILER_ARGV
     test_path,out_path = Global.TEST_PATH,Global.OUT_PATH
     code_path = f"{os.getcwd()}\\" + Global.CODE_PATH
     temp = f"{os.getcwd()}\\temp\\out"
-    test_branch = f"{os.getcwd()}\\PipeLine\\testbranch.v"
-    if(debug): print("generating out (PipeLine)")
+    test_branch = f"{os.getcwd()}\\Verilog\\P5.v"
+    if(debug): print("generating out (P5)")
     if(compiler == "iverilog"):
         (test_path, test_name) = os.path.split(test_path)
         Base.run(["cd",test_path,"&&","copy",code_path,"code.txt"])
@@ -336,16 +336,38 @@ def generate_out_PipeLine():
     with open(out_path,"w") as out_file:
             out_file.write(json.dumps(out, sort_keys=False,
                            indent=4, separators=(',', ': ')))
-    if(debug): print("generating out finish (PipeLine)")
+    if(debug): print("generating out finish (P5)")
     return        
-def PipeLine():
-    """测试流水线CPU"""
+def P5():
+    """测试P5 CPU"""
     skip = Global.SKIP
     if (skip == False):
         if (Global.FILE_PATH == ""):
             generate_instruction()
         else:
             Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
-            generate_code_PipeLine()
-    generate_out_PipeLine()
+            generate_code_P5()
+    generate_out_P5()
+    pass
+
+
+def generate_code_P6():
+    """生成 P6 机器码和标准输出"""
+    """生成机器码"""
+    """生成标准输出"""
+    pass
+
+def generate_out_P6():
+    """获取 P6 CPU 输出文件"""
+
+def P6():
+    """测试P6 CPU"""
+    skip = Global.SKIP
+    if (skip == False):
+        if (Global.FILE_PATH == ""):
+            generate_instruction()
+        else:
+            Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
+            generate_code_P6()
+    generate_out_P6()
     pass

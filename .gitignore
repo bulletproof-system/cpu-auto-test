@@ -154,4 +154,5 @@ output/test.circ
 .vscode/
 output/*
 temp/*
+test_file/*
 dump.bat

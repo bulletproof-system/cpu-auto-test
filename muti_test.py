@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-11-07 20:52:32
 LastEditors: ltt
-LastEditTime: 2022-11-07 22:07:23
+LastEditTime: 2022-11-09 12:13:43
 FilePath: muti_test.py
 '''
 import modules.Base as Base
@@ -14,6 +14,7 @@ import auto_test
 
 def main():
     # auto_test.main()
+    
     pass
 
 if __name__ == "__main__":

@@ -89,60 +89,24 @@
 		if(Globals.outPutStd) System.out.print(String.format("*0x%08x <= %08x", address, value));
 		```
 
-## 4. add 与 sub 不检测溢出
+## 4. 使用 `ignore` 参数忽略溢出和字对齐
+
+- `mars\Globals.java`
+
+	- 添加 `ignore` 全局变量，以忽略溢出和字对齐
+
+		```java
+		public static boolean ignore = false;
+		```
+	
+- `venus/MarsLaunch.java`
+
+	- `private boolean parseCommandArgs(String[] args)` 方法
 
 - `mars\mips\instructions\InstructionSet.java`
 
-	- 注释掉判断溢出的部分
-
-		```java
-		instructionList.add(
-		                new BasicInstruction("add $t1,$t2,$t3",
-		            	 "Addition with overflow : set $t1 to ($t2 plus $t3)",
-		                BasicInstructionFormat.R_FORMAT,
-		                "000000 sssss ttttt fffff 00000 100000",
-		                new SimulationCode()
-		               {
-		                   public void simulate(ProgramStatement statement) throws ProcessingException
-		                  {
-		                     int[] operands = statement.getOperands();
-		                     int add1 = RegisterFile.getValue(operands[1]);
-		                     int add2 = RegisterFile.getValue(operands[2]);
-		                     int sum = add1 + add2;
-		                  // overflow on A+B detected when A and B have same sign and A+B has other sign.
-		                     // if ((add1 >= 0 && add2 >= 0 && sum < 0)
-		                     //    || (add1 < 0 && add2 < 0 && sum >= 0))
-		                     // {
-		                     //    throw new ProcessingException(statement,
-		                     //        "arithmetic overflow",Exceptions.ARITHMETIC_OVERFLOW_EXCEPTION);
-		                     // }
-		                     RegisterFile.updateRegister(operands[0], sum);
-		                  }
-		               }));
-		instructionList.add(
-		                new BasicInstruction("sub $t1,$t2,$t3",
-		            	 "Subtraction with overflow : set $t1 to ($t2 minus $t3)",
-		                BasicInstructionFormat.R_FORMAT,
-		                "000000 sssss ttttt fffff 00000 100010",
-		                new SimulationCode()
-		               {
-		                   public void simulate(ProgramStatement statement) throws ProcessingException
-		                  {
-		                     int[] operands = statement.getOperands();
-		                     int sub1 = RegisterFile.getValue(operands[1]);
-		                     int sub2 = RegisterFile.getValue(operands[2]);
-		                     int dif = sub1 - sub2;
-		                  // overflow on A-B detected when A and B have opposite signs and A-B has B's sign
-		                     // if ((sub1 >= 0 && sub2 < 0 && dif < 0)
-		                     //    || (sub1 < 0 && sub2 >= 0 && dif >= 0))
-		                     // {
-		                     //    throw new ProcessingException(statement,
-		                     //        "arithmetic overflow",Exceptions.ARITHMETIC_OVERFLOW_EXCEPTION);
-		                     // }
-		                     RegisterFile.updateRegister(operands[0], dif);
-		                  }
-		               }));
-		```
+	- 判断溢出的部分
+- 判断字对齐的部分
 
 
 ## 5. 寄存器初值默认为 0

@@ -408,6 +408,11 @@ public class MarsLaunch {
             Globals.outPutStd = true;
             continue;
          }
+         // 忽略溢出和字对齐
+         if (args[i].toLowerCase().equals("ignore")) { 
+            Globals.ignore = true;
+            continue;
+         }
          // Check for stand-alone integer, which is the max execution steps option
          if (args[i].toLowerCase().indexOf("n")==0) {
             String s = args[i].substring(1);					   

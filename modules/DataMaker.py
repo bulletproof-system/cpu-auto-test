@@ -2,11 +2,12 @@
 Author: ltt
 Date: 2022-11-07 11:14:05
 LastEditors: ltt
-LastEditTime: 2022-11-08 00:00:03
+LastEditTime: 2022-11-08 13:43:33
 FilePath: DataMaker.py
 '''
 
 import modules.InstrGenerator as IG
+import modules.Global as Global
 import random
 
 # def rand
@@ -26,9 +27,20 @@ def add_nop(source):
             ret.append(s)
     return ret
 
-def generate_case(num):
+def generate_group(id, num = 10, prefix='', name="case"):
     ret = []
-    case_label =  f"case_{num}"
-    ret.append({"type" : "label", "label" : case_label})
+    class_list = [key for key, value in Global.CLASSIFY.items() if value["enbled"] != []]
+    label = f"{name}_{id}"
+    begin_label =  label+"_begin"
+    end_label = label+"_end"
+    used_reg = list(range(1,31))
+    random.shuffle(used_reg)
+    used_reg = sorted(used_reg[0:3]+[0,31])
+    ret.append({"type" : "label", "label" : begin_label})
+    for _ in range(num):
+        ret.append(IG.construct_instr())
+    
+    ret.append({"type" : "label", "label" : end_label})
+    
     
     

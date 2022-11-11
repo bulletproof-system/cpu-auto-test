@@ -496,6 +496,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
      * @throws AddressErrorException If address is not on word boundary.
     **/
        public int setWord(int address, int value) throws AddressErrorException {
+         if(Globals.ignore == false) address = (address >> 2) << 2;
          if (address % WORD_LENGTH_BYTES != 0) {
             throw new AddressErrorException(
                "store address not aligned on word boundary ",
@@ -822,6 +823,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
      * @throws AddressErrorException If address is not on word boundary.
     **/
        public int getWord(int address) throws AddressErrorException {
+         if(Globals.ignore == false) address = (address >> 2) << 2;
          if (address % WORD_LENGTH_BYTES != 0) {
             throw new AddressErrorException("fetch address not aligned on word boundary ",
                Exceptions.ADDRESS_EXCEPTION_LOAD, address);

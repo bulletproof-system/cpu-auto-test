@@ -2,7 +2,7 @@
  * @Author: ltt
  * @Date: 2022-10-16 14:42:06
  * @LastEditors: ltt
- * @LastEditTime: 2022-10-30 15:32:35
+ * @LastEditTime: 2022-11-09 15:48:04
  * @FilePath: Globals.java
  */
    package mars;
@@ -103,6 +103,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
    	
       // LTT's debug imformation
       public static boolean outPutStd = false;
+      public static boolean ignore = false;
 
       public static boolean runSpeedPanelExists = false;
    	

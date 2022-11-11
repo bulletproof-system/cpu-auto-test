@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-23 10:45:14
 LastEditors: ltt
-LastEditTime: 2022-11-07 23:35:15
+LastEditTime: 2022-11-09 10:54:53
 FilePath: Decode.py
 '''
 
@@ -83,7 +83,7 @@ def load_setting(setting):
     Global.OUT_NAME  = setting["OUT_NAME"]
     Global.MARS_PATH  = setting["MARS_PATH"]
     Global.LOGISIM_PATH  = setting["LOGISIM_PATH"]
-    Global.DELAY_ENBLED  = (setting["DELAY_ENBLED"] == "true")
+    Global.P  = setting["P"]
     Global.COMPILER_TYPE  = setting["COMPILER_TYPE"]
     Global.COMPILER_ARGV  = setting["COMPILER_ARGV"]
     Global.TEST_TYPE  = setting["TEST_TYPE"]
@@ -159,8 +159,8 @@ def init_argv():
             Global.MARS_PATH = value
         if option in ("--logisim"):
             Global.LOGISIM_PATH = value
-        if option in ("--delay-enbled"):
-            Global.DELAY_ENBLED = True
+        if option in ("-p"):
+            Global.P = int(value)
     Global.ASM_PATH = Global.OUTPUT_DIR+"\\"+Global.ASM_NAME
     Global.CODE_PATH = Global.OUTPUT_DIR+"\\"+Global.CODE_NAME
     Global.RESULT_PATH = f"{Global.OUTPUT_DIR}"+"\\"+Global.RESULT_NAME

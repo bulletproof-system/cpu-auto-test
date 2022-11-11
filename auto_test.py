@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-22 22:12:33
 LastEditors: ltt
-LastEditTime: 2022-11-07 21:21:42
+LastEditTime: 2022-11-09 10:53:47
 FilePath: auto_test.py
 '''
 import modules.Base as Base
@@ -21,10 +21,14 @@ def main():
         Comparator.Logisim()
         pass
     elif(test_type == "Verilog"):
-        if(Global.DELAY_ENBLED == False):
-            Generator.Single_Cycle()
+        if(Global.P == 4):
+            Generator.P4()
+        elif (Global.P == 5):
+            Generator.P5()
+        elif (Global.P == 6):
+            Generator.P6() 
         else:
-            Generator.PipeLine()
+            pass
         Comparator.Verilog()
         pass
     else:
