@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-22 22:12:33
 LastEditors: ltt
-LastEditTime: 2022-11-09 10:53:47
+LastEditTime: 2022-11-14 17:10:21
 FilePath: auto_test.py
 '''
 import modules.Base as Base
@@ -30,11 +30,10 @@ def main():
         else:
             pass
         Comparator.Verilog()
-        pass
     else:
         print("无效测试文件名")
-        raise RuntimeError
-    return
+        raise RuntimeError("无效测试文件名")
+    return 0
     
 if __name__ == "__main__":
     Decode.init_argv() # 读取参数

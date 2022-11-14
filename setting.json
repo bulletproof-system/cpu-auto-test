@@ -1,6 +1,6 @@
 {
 	"FILE_PATH" : null,
-	"TEST_NUM" : 100,
+	"TEST_NUM" : 10,
 	"SKIP" : false,
 	"FORCE" : false,
 	"DEBUG" : false,
@@ -28,12 +28,31 @@
 			"jump" : false
 		},
 		"cal_ri": {
-			"include" : ["addi", "addiu", "slti", "sltiu", "andi", "ori", "xori", "sll", "sra", "srl"],
+			"include" : ["addi", "slti"],
 			"struct" : ["opcode", "rs", "rt", "immediate"],
 			"mips" : ["rt", ", ", "rs", ", ", "immediate"],
 			"RegWrite" : true,
 			"MemWrite" : false,
-			"jump" : false
+			"jump" : false,
+			"immediate" : [-32768, 32767]
+		},
+		"cal_ru": {
+			"include" : ["sltiu", "andi", "ori", "xori"],
+			"struct" : ["opcode", "rs", "rt", "immediate"],
+			"mips" : ["rt", ", ", "rs", ", ", "immediate"],
+			"RegWrite" : true,
+			"MemWrite" : false,
+			"jump" : false,
+			"immediate" : [0, 65535]
+		},
+		"shift": {
+			"include" : ["sll", "sra", "srl"],
+			"struct" : ["opcode", "rs", "rt", "immediate"],
+			"mips" : ["rt", ", ", "rs", ", ", "immediate"],
+			"RegWrite" : true,
+			"MemWrite" : false,
+			"jump" : false,
+			"immediate" : [0, 31]
 		},
 		"br_r1": {
 			"include" : ["bgez", "bgtz", "blez", "bltz"],
@@ -140,48 +159,13 @@
 			"jump" : false
 		}
 	},
-	"ENBLED_INSTRUCTION" : ["add", "sub", "ori", "lw", "sw", "beq", "lui", "jal", "jr", "nop"],
-	"INSTRUCTION_DICT" : {
-		"add" : {
-			"opcode" : "000000",
-			"funct" : "100000"
-		},
-		"sub" : {
-			"opcode" : "000000",
-			"funct" : "100010"
-		},
-		"ori" : {
-			"opcode" : "001101"
-		},
-		"lw" : {
-			"opcode" : "100011"
-		},
-		"sw" : {
-			"opcode" : "101011"
-		},
-		"beq" : {
-			"opcode" : "000100"
-		},
-		"lui" : {
-			"opcode" : "001111"
-		},
-		"nop" : {
-			"opcode" : "000000",
-			"funct" : "000000"
-		},
-		"j" : {
-			"opcode" : "000010"
-		},
-		"jal" : {
-			"opcode" : "000011"
-		},
-		"jr" : {
-			"opcode" : "000000",
-			"funct" : "001000"
-		},
-		"sll" : {
-			"opcode" : "000000",
-			"funct" : "000000"
-		}
-	}
+	"ENBLED_INSTRUCTION_P4" : ["add","sub","ori","lw","sw","beq","lui","jal","jr","nop"],
+	"ENBLED_INSTRUCTION_P5" : ["add","sub","ori","lw","sw","beq","lui","jal","jr","nop"],
+	"ENBLED_INSTRUCTION_P6" : ["add", "sub", "and", "or", "slt", "sltu", "addu", "subu", "sll",
+							"addi", "andi", "ori", 
+							"lw", "lb", "lbu", "lh", "lhu",
+							"sb", "sh", "sw",
+							"mult", "multu", "div", "divu", "mfhi", "mflo", "mthi", "mtlo",
+							"beq", "bne",
+							"lui", "jal", "jr", "jalr", "j", "nop"]
 }

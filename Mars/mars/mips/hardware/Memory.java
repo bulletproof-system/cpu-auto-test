@@ -358,7 +358,15 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
        public int set(int address, int value, int length) throws AddressErrorException {
          int oldValue = 0;
          if (Globals.debug) System.out.println("memory["+address+"] set to "+value+"("+length+" bytes)");
-         if(Globals.outPutStd) System.out.print(String.format("*0x%08x <= %08x", address, value));
+         if(Globals.outPutStd){
+            int nowValue = getWord(address>>2<<2);
+            System.out.print(String.format("*0x%08x <= %08x", address>>2<<2, 
+           length == 4 ? value :
+           length == 2 ? (((address & 2) == 2) ? (value<<16 & 0xffff0000) | (nowValue & 0x0000ffff): (value & 0x0000ffff) | (nowValue & 0xffff0000)) :
+           ((address & 3) == 0) ? (value & 0x000000ff) | (nowValue & 0xffffff00) : 
+           ((address & 3) == 1) ? (value<<8 & 0x0000ff00) | (nowValue & 0xffff00ff) : 
+           ((address & 3) == 2) ? (value<<16 & 0x00ff0000) | (nowValue & 0xff00ffff) : (value<<24 & 0xff000000) | (nowValue & 0x00ffffff)));
+         } 
          int relativeByteAddress;
          if (inDataSegment(address)) {
            // in data segment.  Will write one byte at a time, w/o regard to boundaries.
@@ -519,6 +527,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
      * @throws AddressErrorException If address is not on halfword boundary.
     **/   
        public int setHalf(int address, int value) throws AddressErrorException {
+         if(Globals.ignore) address = address >> 1 << 1;
          if (address % 2 != 0) {
             throw new AddressErrorException("store address not aligned on halfword boundary ",
                Exceptions.ADDRESS_EXCEPTION_STORE, address);
@@ -860,6 +869,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
      * @throws AddressErrorException If address is not on halfword boundary.
     **/   
        public int getHalf(int address) throws AddressErrorException {
+         if(Globals.ignore) address = address >> 1 << 1;
          if (address % 2 != 0) {
             throw new AddressErrorException("fetch address not aligned on halfword boundary ",
                Exceptions.ADDRESS_EXCEPTION_LOAD, address);

@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-23 10:45:14
 LastEditors: ltt
-LastEditTime: 2022-11-09 10:54:53
+LastEditTime: 2022-11-14 18:10:47
 FilePath: Decode.py
 '''
 
@@ -88,9 +88,9 @@ def load_setting(setting):
     Global.COMPILER_ARGV  = setting["COMPILER_ARGV"]
     Global.TEST_TYPE  = setting["TEST_TYPE"]
     Global.CLASSIFY = setting["CLASSIFY"]
-    Global.INSTRUCTION_DICT  = setting["INSTRUCTION_DICT"]
+    # Global.ENBLED_INSTRUCTION = setting["ENBLED_INSTRUCTION"]
+    # Global.INSTRUCTION_DICT  = setting["INSTRUCTION_DICT"]
     # Global = setting[""]
-    construct_instruction_dict()
     
 def init_argv():
     """读取参数"""
@@ -161,11 +161,9 @@ def init_argv():
             Global.LOGISIM_PATH = value
         if option in ("-p"):
             Global.P = int(value)
-    Global.ASM_PATH = Global.OUTPUT_DIR+"\\"+Global.ASM_NAME
-    Global.CODE_PATH = Global.OUTPUT_DIR+"\\"+Global.CODE_NAME
-    Global.RESULT_PATH = f"{Global.OUTPUT_DIR}"+"\\"+Global.RESULT_NAME
-    Global.STD_PATH = Global.OUTPUT_DIR+"\\"+Global.STD_NAME
-    Global.OUT_PATH = Global.OUTPUT_DIR+"\\"+Global.OUT_NAME
+    change_dir()
+    Global.ENBLED_INSTRUCTION = setting[f"ENBLED_INSTRUCTION_P{Global.P}"]
+    construct_instruction_dict()
     test_path = Global.TEST_PATH
     if(re.search(".circ",test_path) != None):
         Global.TEST_TYPE = "Logisim"
@@ -186,6 +184,8 @@ def get_file_md5(file_path):
 
 def construct_instruction_dict():
     """构造指令字典"""
+    for instr in Global.ENBLED_INSTRUCTION:
+        Global.INSTRUCTION_DICT[instr] = {}
     for class_name, class_value  in Global.CLASSIFY.items():
         class_value["enbled"] = []
         for instr_name, instr_value in Global.INSTRUCTION_DICT.items():
@@ -195,7 +195,23 @@ def construct_instruction_dict():
                 instr_value["RegWrite"] = class_value["RegWrite"]
                 instr_value["MemWrite"] = class_value["MemWrite"]
                 instr_value["jump"] = class_value["jump"]
-                
+        if class_value["enbled"] != [] :
+            Global.ENBLED_CLASS.append(class_name)
+            if(class_name in ("cal_rr", "cal_ri", "mv_to","cal_ru","shift")):
+                Global.CALC_CLASS.append(class_name)
+            if(class_name in ("load", "store")):
+                Global.MEM_CLASS.append(class_name)
+            if(class_name in ("br_r1", "br_r2", "jal", "j")):
+                Global.JUMP_CLASS.append(class_name)
+            if(class_name in ("mul_div")):
+                Global.MD_CLASS.append(class_name)
+            
+def change_dir():
+    Global.ASM_PATH = Global.OUTPUT_DIR+"\\"+Global.ASM_NAME
+    Global.CODE_PATH = Global.OUTPUT_DIR+"\\"+Global.CODE_NAME
+    Global.RESULT_PATH = f"{Global.OUTPUT_DIR}"+"\\"+Global.RESULT_NAME
+    Global.STD_PATH = Global.OUTPUT_DIR+"\\"+Global.STD_NAME
+    Global.OUT_PATH = Global.OUTPUT_DIR+"\\"+Global.OUT_NAME
     
 if __name__ == "__main__":
 	print(signextend("1111001100"))

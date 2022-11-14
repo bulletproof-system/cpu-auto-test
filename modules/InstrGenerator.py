@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-11-07 17:05:01
 LastEditors: ltt
-LastEditTime: 2022-11-08 13:55:51
+LastEditTime: 2022-11-14 18:55:53
 FilePath: InstrGenerator.py
 '''
 
@@ -10,55 +10,83 @@ import modules.Global as Global
 import modules.Decode as Decode
 import random
 
-
-def construct_instr(name, *argv):
+def construct(name, *argv):
     ret = {}
     ret["type"] = "instr"
     ret["name"] = name
-    instr_class = Global.INSTRUCTION_DICT[name]
-    ret["class"] = instr_class["class"]
-    mips = Global.CLASSIFY[ret["class"]]["mips"].copy()
+    instr_class = Global.INSTRUCTION_DICT[name]["class"]
+    ret["class"] = instr_class
+    mips = Global.CLASSIFY[instr_class]["mips"]
     i = 0
-    for a in mips:
-        if(a in (", ","(",")")): ret[a] = a
+    for str in mips:
+        if(str in (", ", "(", ")")):
+            ret[str] = str
         else:
-            ret[a] = argv[i]
+            ret[str] = argv[i]
             i += 1
-            
     return ret
+
+def calc_instr(name, used_reg):
+    ret = {}
+    ret["type"] = "instr"
+    ret["name"] = name
+    instr_class = Global.INSTRUCTION_DICT[name]["class"]
+    ret["class"] = instr_class
+    mips = Global.CLASSIFY[instr_class]["mips"]
+    for str in mips:
+        if(str in ("rs", "rt", "rd")):
+            ret[str] = random.choice(used_reg)
+        elif str in ("immediate"):
+            ret[str] = random.randint(Global.CLASSIFY[instr_class]["immediate"][0] ,
+                                      Global.CLASSIFY[instr_class]["immediate"][1])
+        else:
+            ret[str] = str
+    return [ret]
+
+def mem_instr(name, used_reg):
+    ret = []
+    rt = random.choice(used_reg)
+    base = random.choice(used_reg)
+    ret.append(construct("ori", base, 0, 0))
+    if(name in ("lw", "sw")):
+        ret.append(construct(name, rt, random.randrange(0,100,4), base))
+    if(name in ("lh", "lhu", "sh")):
+        ret.append(construct(name, rt, random.randrange(0,100,2), base))
+    if(name in ("lb", "sb")):
+        ret.append(construct(name, rt, random.randrange(0,100,1), base))
+    return ret
+
+def md_instr(name, used_reg):
+    ret = []
+    rs = random.choice(used_reg)
+    rt = random.choice(used_reg)
+    ret.append(construct(name, rs, rt))
+    return ret
+
+def jump_instr(name, used_reg, label):
+    ret = []
+    if(name in Global.CLASSIFY["br_r1"]["include"]):
+        ret.append(construct(name, random.choice(used_reg), label))
+    if(name in Global.CLASSIFY["br_r2"]["include"]):
+        ret.append(construct(name, random.choice(used_reg), 
+                             random.choice(used_reg), label))
+    if(name in ("jal", "j")):
+        ret.append(construct(name, label))
     
-def rand_instr(instr_class, *argv):
-    choice = Global.CLASSIFY[instr_class]["enbled"]
-    return construct_instr(random.choice(choice), argv)
     
-def rand_argv(str, argv=[]):
-    """生成随机参数"""
-    if(argv != []): return random.choice(argv)
-    if str in ("rs","rt","rd","base"): 
-        return random.randint(0,31)
-    elif str in ("offset", "immediate"):
-        return random.randint(-100, 100)
-    else:
-        return 0
-    
-def rand_assign(*argv, word_aligned=False):
+def rand_instr(instr_class):
+    return random.choice(Global.CLASSIFY[instr_class]["enbled"])
+
+def rand_assign(uninit_reg, word_aligned=False):
     """对所给寄存器随机赋值"""
     ret = []
-    value = {0 : 0}
-    init_reg = [0]
-    uninit_reg = argv.copy()
-    random.shuffle(uninit_reg)
-    for x in argv:
-        op = random.randint(0,1)
-        if op == 0:
-            ret.append(rand_instr("cal_ri", x, random.choice(init_reg), rand_argv("immediate")))
-        else:
-            ret.append()
-    pass
+    for x in uninit_reg:
+        ret.append(construct("lui", x, random.randint(0,0xffff)))
+    return ret
     
-def print_mips(src, prefix='', suffix=''):
+def to_str(src, prefix='', suffix='\n'):
     """输出指令"""
-    if(src["type"] == "label"): print(src["label"]+':')
+    if(src["type"] == "label"): return src["label"]+':'+suffix
     else:
         ret = [prefix ,src["name"]," "]
         mips = Global.CLASSIFY[src["class"]]["mips"]
@@ -72,7 +100,8 @@ def print_mips(src, prefix='', suffix=''):
             else:
                 ret.append(src[x])
         ret.append(suffix)
-        print(''.join(ret))
-        
+        return ''.join(ret)
+
+
 if __name__ == "__main__":
     pass

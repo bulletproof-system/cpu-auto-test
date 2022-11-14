@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-22 22:17:45
 LastEditors: ltt
-LastEditTime: 2022-11-09 10:39:33
+LastEditTime: 2022-11-14 11:01:01
 FilePath: Global.py
 '''
 
@@ -11,7 +11,7 @@ longopts = ["help","filename=","number=","max-execution=","force","debug","outpu
             "asm=","code=","result=","test=","compiler=","argv=","std=","out=","mars=",
             "logisim=","default-setting="]
 FILE_PATH = "FILE_PATH"
-TEST_NUM = "TEST_NUM"
+TEST_NUM = 100
 SKIP = "SKIP"
 FORCE = "FORCE"
 DEBUG = "DEBUG"
@@ -36,7 +36,11 @@ COMPILER_ARGV = "COMPILER_ARGV"
 CLASSIFY = {}
 ENBLED_INSTRUCTION = []
 INSTRUCTION_DICT = {}
-MARS_ARGV = ["db","me","nc","mc","CompactDataAtZero","ae1"]
+ENBLED_CLASS = []
+CALC_CLASS = []
+MEM_CLASS = []
+JUMP_CLASS = []
+MD_CLASS = []
 TEST_TYPE = "TEST_TYPE"
 ROM =r"""<comp lib=\"4\" loc=\"\([0-9]*,[0-9]*\)\" name=\"ROM\">
       <a name=\"addrWidth\" val=\"[0-9]*\"\/>
@@ -44,5 +48,5 @@ ROM =r"""<comp lib=\"4\" loc=\"\([0-9]*,[0-9]*\)\" name=\"ROM\">
       <a name=\"contents\">addr\/data:[0-9a-zA-Z \n]*
 <\/a>
     <\/comp>"""
-
 P5_TEST_BRANCH = ""
+label_num = 0

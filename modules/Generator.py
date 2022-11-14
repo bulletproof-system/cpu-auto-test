@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-26 20:19:34
 LastEditors: ltt
-LastEditTime: 2022-11-10 22:49:43
+LastEditTime: 2022-11-12 19:25:24
 FilePath: Generator.py
 '''
 import re, json, os
@@ -56,7 +56,9 @@ def generate_code_Logisim():
         if(debug): print(f"generating {str}")
         
         # 根据指令获取输出
-        attr,code = Decode.findInList(instr, Global.INSTRUCTION_DICT),Decode.toBin(instr)
+        attr,code = Global.INSTRUCTION_DICT.get(ans["asm"].split(' ')[0]),Decode.toBin(instr)
+        if(attr == None):
+            raise RuntimeError("指令集中没有该指令:"+ans["asm"])
         ans["code"] = code
         if (attr["RegWrite"] == True):
             ans["RegWrite"] = True
@@ -162,7 +164,9 @@ def generate_code_P4():
         if(debug): print(f"generating {str}")
         
         # 根据指令获取输出
-        attr,code = Decode.findInList(instr, Global.INSTRUCTION_DICT),Decode.toBin(instr)
+        attr,code = Global.INSTRUCTION_DICT.get(ans["asm"].split(' ')[0]),Decode.toBin(instr)
+        if(attr == None):
+            raise RuntimeError("指令集中没有该指令:"+ans["asm"])
         ans["code"] = code
         if (attr["RegWrite"] == True):
             ans["RegWrite"] = True
@@ -270,7 +274,9 @@ def generate_code_P5():
         if(debug): print(f"generating {str}")
         
         # 根据指令获取输出
-        attr,code = Decode.findInList(instr, Global.INSTRUCTION_DICT),Decode.toBin(instr)
+        attr,code = Global.INSTRUCTION_DICT.get(ans["asm"].split(' ')[0]),Decode.toBin(instr)
+        if(attr == None):
+            raise RuntimeError("指令集中没有该指令:"+ans["asm"])
         ans["code"] = code
         if(code == "0"*32): continue
         if (attr["RegWrite"] == True):
@@ -354,12 +360,102 @@ def P5():
 def generate_code_P6():
     """生成 P6 机器码和标准输出"""
     """生成机器码"""
+    asm, mars = Global.ASM_PATH, Global.MARS_PATH
+    code_path = Global.CODE_PATH
+    debug = Global.DEBUG
+    if(debug): print("generating code (P6)")
+    Base.run(["java", "-jar", mars,"ignore","ae1","db", "me", "nc", "mc", "CompactDataAtZero", "dump", ".text", "HexText", code_path, asm])
+    with open(code_path, "r") as code_file:
+        codes = code_file.readlines()
+    if(debug): print("generating code finish(P6)")
     """生成标准输出"""
+    std_path = Global.STD_PATH
+    codes += ["00000000"]
+    std = []
+    if(debug): print("generating std (P6)")
+    ret = Base.run(["java","-jar",mars,"ignore","ae1","db","me","nc","std","mc","CompactDataAtZero",asm]).split('\n')
+    for str in ret:
+        ans = {}
+        if(str[0:2] != "pc"): continue
+        # 获取 pc 及指令
+        pc = ans["pc"] = "0x"+str[6:14]
+        instr = ans["instr"] = str[24:32]
+        ans["asm"] = re.search(r"asm:[^\r^\n]*",str).group()[5:]
+        if(debug): print(f"generating {str}")
+        
+        # 根据指令获取输出
+        attr,code = Global.INSTRUCTION_DICT.get(ans["asm"].split(' ')[0]),Decode.toBin(instr)
+        if(attr == None):
+            raise RuntimeError("指令集中没有该指令:"+ans["asm"])
+        ans["code"] = code
+        if(code == "0"*32): continue
+        if (attr["RegWrite"] == True):
+            ans["RegWrite"] = True
+            ans["RegAddr"] = str[34:36]
+            ans["RegData"] = "0x"+str[40:48]
+            if(ans["RegAddr"] == " 0"): continue # 过滤 $0 寄存器
+        else:
+            ans["RegWrite"] = False   
+        if (attr["MemWrite"] == True):
+            ans["MemWrite"] = True
+            ans["MemAddr"] = str[34:44]
+            ans["MemData"] = "0x"+str[48:56]
+        else:
+            ans["MemWrite"] = False
+    
+        # if (attr["RegWrite"] or attr["MemWrite"]):
+        std.append(ans)
+    with open(std_path, "w") as std_file:
+        std_file.write(json.dumps(std, sort_keys=False, indent=4, separators=(',', ': ')))
+    if(debug): print("generating code finish (P6)")    
+    return
     pass
 
 def generate_out_P6():
     """获取 P6 CPU 输出文件"""
-
+    debug = Global.DEBUG
+    compiler,argv = Global.COMPILER_TYPE,Global.COMPILER_ARGV
+    test_path,out_path = Global.TEST_PATH,Global.OUT_PATH
+    code_path = f"{os.getcwd()}\\" + Global.CODE_PATH
+    temp = f"{os.getcwd()}\\temp\\out"
+    test_branch = f"{os.getcwd()}\\Verilog\\P6.v"
+    if(debug): print("generating out (P6)")
+    if(compiler == "iverilog"):
+        (test_path, test_name) = os.path.split(test_path)
+        Base.run(["cd",test_path,"&&","copy",code_path,"code.txt"])
+        ret = Base.run(["cd",test_path,
+                        "&&","iverilog",argv,"-o",temp,test_name,test_branch, 
+                        "&&", "vvp", temp], errdesc="编译错误")
+        match = re.findall(r"[0-9]*@.*\n",ret)
+        # print(match)
+        out = []
+        for s in match:
+            ans = {}
+            ans["time"] = re.search(r"[0-9]*@", s).group()[:-1]
+            if(re.search(r"@.{10}\$.{14}[\r\n]+", s) != None):
+                s = re.search(r"@.{10}\$.{14}[\r\n]+", s).group()
+                ans["pc"] = "0x"+s[1:9]
+                ans["RegWrite"] = True
+                ans["MemWrite"] = False
+                ans["RegAddr"] = s[12:14]
+                ans["RegData"] = "0x"+s[-10:-2]
+                if(ans["RegAddr"] == " 0"): continue # 过滤 $0 寄存器
+            else:
+                s = re.search(r"@.{10}\*.{20}[\r\n]+", s).group()
+                ans["pc"] = "0x"+s[1:9]
+                ans["MemWrite"] = True
+                ans["RegWrite"] = False
+                ans["MemAddr"] = "0x"+s[12:20]
+                ans["MemData"] = "0x"+s[-10:-2]
+            out.append(ans)
+    else:
+        pass
+    out.sort(key=cmp_to_key(comp))
+    with open(out_path,"w") as out_file:
+            out_file.write(json.dumps(out, sort_keys=False,
+                           indent=4, separators=(',', ': ')))
+    if(debug): print("generating out finish (P6)")
+    return  
 def P6():
     """测试P6 CPU"""
     skip = Global.SKIP

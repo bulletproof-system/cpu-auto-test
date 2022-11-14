@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-26 20:16:07
 LastEditors: ltt
-LastEditTime: 2022-11-07 21:17:31
+LastEditTime: 2022-11-14 17:28:30
 FilePath: Base.py
 '''
 import subprocess
@@ -44,3 +44,6 @@ def test_env():
             except:
                 print("无可用 verilog 编译器")
                 
+class CompareError(RuntimeError):
+    def __init__(self, arg=[]):
+        self.args = arg

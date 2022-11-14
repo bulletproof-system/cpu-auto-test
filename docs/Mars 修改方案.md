@@ -86,7 +86,7 @@
 		内存改变时输出值
 
 		```java
-		if(Globals.outPutStd) System.out.print(String.format("*0x%08x <= %08x", address, value));
+		if(Globals.outPutStd) System.out.print(String.format("*0x%08x <= %08x", address>>2<<2, value));
 		```
 
 ## 4. 使用 `ignore` 参数忽略溢出和字对齐
@@ -107,7 +107,6 @@
 
 	- 判断溢出的部分
 - 判断字对齐的部分
-
 
 ## 5. 寄存器初值默认为 0
 

@@ -156,3 +156,5 @@ output/*
 temp/*
 test_file/*
 dump.bat
+gen.exe
+test.asm
