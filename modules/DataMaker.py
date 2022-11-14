@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-11-07 11:14:05
 LastEditors: ltt
-LastEditTime: 2022-11-14 18:58:44
+LastEditTime: 2022-11-14 19:09:38
 FilePath: DataMaker.py
 '''
 
@@ -64,7 +64,7 @@ def generate_case(label, used_reg, MEM, MD, Jump):
         instr_class = random.choice(Global.MD_CLASS)
         ret += IG.md_instr(IG.rand_instr(instr_class), used_reg)
         generate_case(label, used_reg, MEM, False, Jump)
-        generate_case(label, used_reg, MEM, False, Jump)
+        # generate_case(label, used_reg, MEM, False, Jump)
         generate_case(label, used_reg, MEM, False, Jump)
         ret.append(IG.construct(IG.rand_instr("mv_fr"), random.choice(used_reg)))
     elif(op <= jump):

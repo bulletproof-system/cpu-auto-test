@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-26 20:19:34
 LastEditors: ltt
-LastEditTime: 2022-11-12 19:25:24
+LastEditTime: 2022-11-14 19:28:24
 FilePath: Generator.py
 '''
 import re, json, os
@@ -23,7 +23,7 @@ def generate_code_Logisim():
     asm, mars = Global.ASM_PATH, Global.MARS_PATH
     code_path = Global.CODE_PATH
     debug = Global.DEBUG
-    data, text = "temp\\data.txt", "temp\\text.txt"
+    data, text = "temp/data.txt", "temp/text.txt"
     if(debug): print("generating code (Logisim)")
     Base.run(["java", "-jar", mars,"ae1", "me", "nc", "mc",
              "CompactDataAtZero", "dump", ".text", "HexText", data, asm])
@@ -103,8 +103,8 @@ def generate_out_Logisim():
             fp.truncate()
             fp.write(circ_str)
 
-    ret = Base.run(["java", "-jar", logisim, "Logisim\\auto_test.circ",
-                   "-tty", "table", "-sub", "Logisim\\CPU.circ", test_circ])
+    ret = Base.run(["java", "-jar", logisim, "Logisim/auto_test.circ",
+                   "-tty", "table", "-sub", "Logisim/CPU.circ", test_circ])
 
     ret = ret.replace(' ', '').replace('\t', '').split('\n')
     out = []
@@ -193,9 +193,9 @@ def generate_out_P4():
     debug = Global.DEBUG
     compiler,argv = Global.COMPILER_TYPE,Global.COMPILER_ARGV
     test_path,out_path = Global.TEST_PATH,Global.OUT_PATH
-    code_path = f"{os.getcwd()}\\" + Global.CODE_PATH
-    temp = f"{os.getcwd()}\\temp\\out"
-    test_branch = f"{os.getcwd()}\\Verilog\\P4.v"
+    code_path = os.path.join(f"{os.getcwd()}", Global.CODE_PATH)
+    temp = os.path.join(os.getcwd(), "temp", "out")
+    test_branch = os.path.join(os.getcwd(), "Verilog", "P4.v")
     if(debug): print("generating out (P4)")
     if(compiler == "iverilog"):
         (test_path, test_name) = os.path.split(test_path)
@@ -304,9 +304,9 @@ def generate_out_P5():
     debug = Global.DEBUG
     compiler,argv = Global.COMPILER_TYPE,Global.COMPILER_ARGV
     test_path,out_path = Global.TEST_PATH,Global.OUT_PATH
-    code_path = f"{os.getcwd()}\\" + Global.CODE_PATH
-    temp = f"{os.getcwd()}\\temp\\out"
-    test_branch = f"{os.getcwd()}\\Verilog\\P5.v"
+    code_path = os.path.join(f"{os.getcwd()}", Global.CODE_PATH)
+    temp = os.path.join(os.getcwd(), "temp", "out")
+    test_branch = os.path.join(os.getcwd(), "Verilog", "P5.v")
     if(debug): print("generating out (P5)")
     if(compiler == "iverilog"):
         (test_path, test_name) = os.path.split(test_path)
@@ -416,9 +416,9 @@ def generate_out_P6():
     debug = Global.DEBUG
     compiler,argv = Global.COMPILER_TYPE,Global.COMPILER_ARGV
     test_path,out_path = Global.TEST_PATH,Global.OUT_PATH
-    code_path = f"{os.getcwd()}\\" + Global.CODE_PATH
-    temp = f"{os.getcwd()}\\temp\\out"
-    test_branch = f"{os.getcwd()}\\Verilog\\P6.v"
+    code_path = os.path.join(f"{os.getcwd()}", Global.CODE_PATH)
+    temp = os.path.join(os.getcwd(), "temp", "out")
+    test_branch = os.path.join(os.getcwd(), "Verilog", "P6.v")
     if(debug): print("generating out (P6)")
     if(compiler == "iverilog"):
         (test_path, test_name) = os.path.split(test_path)

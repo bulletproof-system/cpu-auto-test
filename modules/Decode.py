@@ -2,11 +2,11 @@
 Author: ltt
 Date: 2022-10-23 10:45:14
 LastEditors: ltt
-LastEditTime: 2022-11-14 18:10:47
+LastEditTime: 2022-11-14 19:27:54
 FilePath: Decode.py
 '''
 
-import sys, getopt, json, re, hashlib
+import sys, getopt, json, re, hashlib, os
 
 import modules.Global as Global
 
@@ -207,11 +207,11 @@ def construct_instruction_dict():
                 Global.MD_CLASS.append(class_name)
             
 def change_dir():
-    Global.ASM_PATH = Global.OUTPUT_DIR+"\\"+Global.ASM_NAME
-    Global.CODE_PATH = Global.OUTPUT_DIR+"\\"+Global.CODE_NAME
-    Global.RESULT_PATH = f"{Global.OUTPUT_DIR}"+"\\"+Global.RESULT_NAME
-    Global.STD_PATH = Global.OUTPUT_DIR+"\\"+Global.STD_NAME
-    Global.OUT_PATH = Global.OUTPUT_DIR+"\\"+Global.OUT_NAME
+    Global.ASM_PATH = os.path.join(Global.OUTPUT_DIR,Global.ASM_NAME)
+    Global.CODE_PATH = os.path.join(Global.OUTPUT_DIR, Global.CODE_NAME)
+    Global.RESULT_PATH = os.path.join(f"{Global.OUTPUT_DIR}", Global.RESULT_NAME)
+    Global.STD_PATH = os.path.join(Global.OUTPUT_DIR, Global.STD_NAME)
+    Global.OUT_PATH = os.path.join(Global.OUTPUT_DIR, Global.OUT_NAME)
     
 if __name__ == "__main__":
 	print(signextend("1111001100"))

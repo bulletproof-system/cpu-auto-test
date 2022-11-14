@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-11-07 17:05:01
 LastEditors: ltt
-LastEditTime: 2022-11-14 18:55:53
+LastEditTime: 2022-11-14 19:15:22
 FilePath: InstrGenerator.py
 '''
 
@@ -48,6 +48,8 @@ def mem_instr(name, used_reg):
     rt = random.choice(used_reg)
     base = random.choice(used_reg)
     ret.append(construct("ori", base, 0, 0))
+    for i in range(random.randint(0,2)):
+        ret.append(construct("nop"))
     if(name in ("lw", "sw")):
         ret.append(construct(name, rt, random.randrange(0,100,4), base))
     if(name in ("lh", "lhu", "sh")):
