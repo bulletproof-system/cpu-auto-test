@@ -6,7 +6,7 @@
 - 支持外接其他数据生成器，`DataMakers` 文件夹中引用了评论区的一些数据生成器，见[外接数据生成器](docs\外接数据生成器.md)，侵删
 - ~~可能会等到本人写过 P7 才会更新~~
 - [项目地址](https://gitee.com/LTT-Repository/cpu-auto-test) 
-- [github 同步仓库]()
+- [github 同步仓库](https://github.com/bulletproof-system/cpu-auto-test/)
 
 [toc]
 
