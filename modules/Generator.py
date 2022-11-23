@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-26 20:19:34
 LastEditors: ltt
-LastEditTime: 2022-11-23 07:29:16
+LastEditTime: 2022-11-23 10:16:13
 FilePath: Generator.py
 '''
 import re, json, os, shutil
@@ -191,10 +191,10 @@ def generate_out_P4():
     os.mkdir("mips_files")
     with open("mips_files/.gitignore", "w") as fp:
         fp.write("!.gitignore")
-    shutil.copy(test_branch, "mips_files")
-    shutil.copy(code_path, "mips_files")
     for file_path in Global.TEST_FILES:
         shutil.copy(file_path, "mips_files")
+    shutil.copy(test_branch, "mips_files")
+    shutil.copy(code_path, "mips_files")
     if(compiler == "iverilog"):
         ret = Base.run(["cd", "mips_files",
                         "&&", "iverilog",argv,"-o","out", "-s", "tb_P4", "*.v", 
@@ -302,10 +302,10 @@ def generate_out_P5():
     os.mkdir("mips_files")
     with open("mips_files/.gitignore", "w") as fp:
         fp.write("!.gitignore")
-    shutil.copy(test_branch, "mips_files")
-    shutil.copy(code_path, "mips_files")
     for file_path in Global.TEST_FILES:
         shutil.copy(file_path, "mips_files")
+    shutil.copy(code_path, "mips_files")
+    shutil.copy(test_branch, "mips_files")
     if(compiler == "iverilog"):
         ret = Base.run(["cd", "mips_files",
                         "&&", "iverilog",argv,"-o","out", "-s", "tb_P5", "*.v", 
@@ -414,10 +414,10 @@ def generate_out_P6():
     os.mkdir("mips_files")
     with open("mips_files/.gitignore", "w") as fp:
         fp.write("!.gitignore")
-    shutil.copy(test_branch, "mips_files")
-    shutil.copy(code_path, "mips_files")
     for file_path in Global.TEST_FILES:
         shutil.copy(file_path, "mips_files")
+    shutil.copy(test_branch, "mips_files")
+    shutil.copy(code_path, "mips_files")
     if(compiler == "iverilog"):
         ret = Base.run(["cd", "mips_files",
                         "&&", "iverilog",argv,"-o","out", "-s", "tb_P6", "*.v", 

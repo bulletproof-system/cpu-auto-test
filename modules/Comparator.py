@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-26 20:22:43
 LastEditors: ltt
-LastEditTime: 2022-11-14 17:35:49
+LastEditTime: 2022-11-23 10:44:52
 FilePath: Comparator.py
 '''
 import json
@@ -11,7 +11,7 @@ import modules.Global as Global
 import modules.Base as Base
 
 
-def Logisim():
+def P3():
     """比对 Logisim"""
     result_path = Global.RESULT_PATH
     with open(result_path, "w") as fp:

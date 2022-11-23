@@ -5,7 +5,7 @@
 	ori $1, $0, 4
 	jal dfs
 	ori $4, $1, 3
-	j end
+	jal end
 
 dfs:
 	ori $2, $0, 2

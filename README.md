@@ -1,17 +1,23 @@
 # 利用 python 对 Logisim/Verilog 中搭建的 CPU 进行自动化测试
 
+- 这个项目现在支持对 P3~P6 的数据生成以及自动化测试
+- 支持指定汇编文件测试和生成多组数据并测试
+- 内置一个数据可以生成 P3~P6 数据的数据生成器，但是数据不是很强，[生成方案](docs\数据生成方案.md) 
+- 支持外接其他数据生成器，`DataMakers` 文件夹中引用了评论区的一些数据生成器，见[外接数据生成器](docs\外接数据生成器.md)，侵删
+- ~~可能会等到本人写过 P7 才会更新~~
 - [项目地址](https://gitee.com/LTT-Repository/cpu-auto-test) 
+- [github 同步仓库]()
 
 [toc]
 
-## 0. 测试方案
+## 测试方案
 
 ### 测试过程
 
 1. 初始化
 
    - 处理命令行参数
-   - 指定指令测试
+   - 指定汇编文件测试或生成多组数据并测试
 3. Mars 编译指令为机器码并得到标准输出
 4. 导入 Logisim/Verilog 并测试
 5. 比对输出数据和标准输出数据
@@ -20,7 +26,7 @@
 
 - python
   - 版本：`python3` 版本大于等于 3.6
-  - 依赖的模块：`sys`、`getopt`、`json` 、`subprocess`、`re`、`hashlib`、`os`
+  - 依赖的模块：`sys`、`getopt`、`json` 、`subprocess`、`re`、`hashlib`、`os`、`shutil`
 - Mars\Mars.jar 魔改过命令行输入
   - 使用 `n<number>` 指定最大仿真步数
   - 输入 `$pc` 以获取 `pc` 的值
@@ -35,38 +41,78 @@
   - 支持 `iverilog` 
 - Windows 10
   - 系统默认 shell：`cmd`
+- Linux 下没有测试过，~~也许可以用~~  
 
 ### 注意事项
 
-- 使用 `-f` 或 `--filename` 指定测试用的 .asm 文件，使用 `--test` 指定测试文件(.circ, .v)
-
+- 使用 `-P` 指定测试的 Project， `--debug` 输出调试信息
+- 对于 P3 使用 `--test` 指定测试文件，如 `D:\LTT\repository\cscore\CPU\P3\P3.circ`
+- 对于其他 P 使用 `--test` 指定测试文件夹，如 `D:\LTT\repository\cscore\CPU\P6\code`
 - 测试 Logisim 时不会改动源文件，会复制一份到 `output\test.circ` 中再修改该文件的 ROM 以进行测试
-
 - 测试 Verilog 时需要使用 `iverilog` 进行仿真
+- 测试 Verilog 时会复制指定测试文件夹下的所有 `.v` 文件到 `mips_files` 文件夹下，除引用公用的宏文件外无需 `include` 其他模块，测试文件夹中可以有无关 `.v` 文件，比如 `tb.v`，但是不能在其中 `include` 其他模块。例如，直接指定向平台提交的文件夹。
 
-- 测试 Verilog 时只需使用 `--test` 指定顶层模块如 `mips.v` 然后在 `mips.v` 中 include 其他文件，可以在文件中中使用宏定义避免来回修改文件，比如在 `mips.v` 的开头添加
+#### 指定汇编文件测试
 
-	```verilog
-	`ifdef IVERILOG
-	`include "control/Controller.v"
-	`include "datapath/DM.v"
-	`include "datapath/GRF.v"
-	`include "datapath/IM.v"
-	`include "datapath/MUX.v"
-	`include "datapath/ALU.v"
-	`include "datapath/Extend.v"
-	`endif 
+- 使用 `-f` 或 `--filename` 指定测试用的 .asm 文件
+
+- 会在命令行打印比对信息，同时输出到文件，默认在 `output` 文件夹中
+
+- example
+
+	```bash
+	echo "test P3"
+	python auto_test.py -f example\test_circ.asm --test D:\LTT\repository\cscore\CPU\P3\P3.circ -P 3 --debug 
+	
+	echo "test P4"
+	python auto_test.py -f example\test_P4.asm --test D:\LTT\repository\cscore\CPU\P4 -P 4 --debug 
+	
+	echo "test P5"
+	python auto_test.py -f example\test_P5.asm --test D:\LTT\repository\cscore\CPU\P5 -P 5 --debug 
+	
+	echo "test P6"
+	python auto_test.py -f example\test_P6.asm --test D:\LTT\repository\cscore\CPU\P6 -P 6 --debug 
 	```
 
-	使用 `--argv` 增加传递给 Verilog 编译器的参数比如 `--argv "-D IVERILOG"`
+	
 
-- 测试 Verilog 时会覆盖 `mips.v` 同级目录下的 `code.txt` 文件
+#### 生成多组数据并测试
+
+- 使用 `--gen` 指定数据生成器，`--gen-argv` 提供数据生成器参数，如果数据生成器将数据输出到文件，请指定文件名为 `asm.asm`，如果将数据输出到命令行，则无需更改。
+
+- 不指定内置生成器时会调用项目内置的数据生成器
+
+- 使用 `-n` 或 `--number` 指定测试组数，默认 10 组
+
+- 会在命令行打印比对信息，同时输出到文件夹，默认在 `output` 文件夹中
+
+- example
+
+	```bash
+	echo "test P3"
+	python muti_test.py --test D:\LTT\repository\cscore\CPU\P3\P3.circ -P 3 --debug 
+	
+	echo "test P4"
+	python muti_test.py --test D:\LTT\repository\cscore\CPU\P4 -P 4 --debug 
+	
+	echo "test P5 内置生成器"
+	python muti_test.py --test D:\LTT\repository\cscore\CPU\P5 -P 5 --debug
+	
+	echo "test P5 外接生成器 P5_Maker_1"
+	python muti_test.py --test D:\LTT\repository\cscore\CPU\P5 -P 5 --debug --gen DataMakers\P5_Maker_1\Maker_1.exe
+	
+	echo "test P5 外接生成器 COgenerator"
+	python muti_test.py --test D:\LTT\repository\cscore\CPU\P5 -P 5 --debug --gen DataMakers\COgenerator\COgenerator.exe --gen-argv "asm.asm 200"
+	
+	echo "test P6 50组数据"
+	python muti_test.py --test D:\LTT\repository\cscore\CPU\P6 -P 6 --debug -n 50
+	```
+
+
 
 ​	
 
-## 1. 初始化
-
-### 读取命令行参数
+## 命令行参数
 
 - 命令行参数列表
 
@@ -75,151 +121,37 @@
   |     `-h,--help`     |      None      |     False     |              展示所有参数并退出              |
   |   `-f,--filename`   |    FILE_PATH    |     None     |  使用指定文件中的指令测试，不指定则随机生成  |
   |    `-n,--number`    |    INSTR_NUM    |      32      |              指定生成的指令个数              |
-  | `-m,--max-execution` | EXECUTION_TIME |      100      |               指令最多执行次数               |
-  |         `-b`         |      None      |     False     |         利用原 std 文件直接比对数据         |
-  |      `--force`      |      None      |     False     |     强制重新生成 std 文件，优先于 `-b`     |
-  | `--debug` | False | True | 输出调试信息 |
-  |    `--output-dir`    |   OUTPUT_DIR   |    output/    |                输出所在文件夹                |
-  |       `--asm`       |    ASM_NAME    |    asm.asm    |                指令保存文件名                |
-  |       `--code`       |    CODE_NAME    |   code.txt   |               机器码保存文件名               |
-  |      `--result`      |   RESULT_NAME   |  result.txt  |                 输出比对结果                 |
-  |       `--test`       |    TEST_PATH    |     None     |          测试文件路径(*.circ, *.v)          |
-  |     `--compiler`     |  COMPILER_TYPE  |   iverilog   |          编译器(iverilog, vcs, ies)          |
-  |       `--argv`       |  COMPILER_ARGV  |     None     |              传递给编译器的参数              |
-  |       `--std`       |    STD_NAME    |   std.json   |                 标准输出结果                 |
-  |       `--out`       |    OUT_NAME    |   out.json   |               测试程序输出结果               |
-  |       `--mars`       |    MARS_PATH    | Mars\Mars.jar |                  Mars 路径                  |
-  |     `--logisim`     |  LOGISIM_PATH  |  logisim.jar  |                 Logisim 路径                 |
-  |   `--delay-enbled`   |   DELAY_ENBLED   |     false     |               是否启用延迟槽               |
-  | `--default-setting` | DEFAULT_SETTING | setting.json | 如果指定将使用文件中的配置并忽略其他所有参数 |
+  | `--debug` | DEBUG | False | 输出调试信息 |
+  |    `--output-dir`    |   OUTPUT_DIR   |    output    |                输出所在文件夹                |
+  |       `--test`       |    TEST_PATH    |     None     |          P3：测试文件, other：测试文件夹          |
+  |     `--compiler`     |  COMPILER_TYPE  |   iverilog   |          编译器(iverilog, vcs, ies)，现在只支持 iverilog          |
+  |       `--compile-argv`       |  COMPILER_ARGV  |     None     |              传递给编译器的参数              |
+  |   `-P`   |   P   |     5     |               指定测试的 Project               |
+  | `--gen` | GENERATOR | None | 指定数据生成器，不指定将使用内置生成器 |
+  | `--gen-argv` | GEN_ARGV | None | 传递给数据生成器的参数 |
 
 
   - 默认参数在 `setting.json` 中修改
   - ` --filename` 仅可指定 `.asm` 文件
-  - 根据测试文件后缀名进行测试
-- `setting.json` 参数列表
 
-  - 同上
-  - ```json
-      "INSTRUCTION_LIST" : [...]
-      ```
+## Bug
 
-### 根据 `FILE_PATH` 有无判断是否生成指令
+- P3 年久失修，使用内置生成器的数据可能会炸
 
-- `FILE_PATH` 有值则跳过 [2. 指令生成](##2. 指令生成)
+## Update
 
-## 2. 指令生成
+### `2022-11-22`
 
-pass
+- 参数列表更改
+- 支持外接数据生成器
+- 优化编译 Verilog 方案，现在只用指定文件夹
+- 修复了 `$gp` 、`$sp` 初始值不为 0 的 bug
 
-## 3.1 Logisim 机器码及 STD 生成
+### `2022-11-14`
 
-- 当两次输入文件一致时或指定了 `-b` 时会跳过，除非指定了 `--force`
-- 调用 `Mars` 从 `ASM_NAME` 文件生成机器码保存至 `CODE_NAME` 中，并同时生成标准输出文件 `STD_NAME`
+- 完成数据生成器
 
-### 3.1.1 生成机器码
-
-- 生成数据段从 0 开始的机器码
-
-  ```bash
-  java -jar Mars\Mars.jar me nc mc CompactDataAtZero dump .text HexText {DATA_PATH} {ASM_PATH}
-  ```
-- 生成代码段从 0 开始的机器码
-
-  ```bash
-  java -jar Mars\Mars.jar me nc mc CompactTextAtZero dump .text HexText {TEXT_PATH} {ASM_PATH}
-  ```
-- 根据不同指令合并得到所需机器码
-
-### 3.1.2 生成标准输出
-
-- 通过增加传递给 Mars 的参数 `std` 格式化输出文件后得到 std
-- 对于每个指令形成如下字典
-
-  ```json
-  {
-      "instr": "",
-      "code": "",
-      "asm": "",
-      "RegWrite": true,
-      "RegAddr": "",
-      "RegData": "",
-      "MemWrite": false,
-      "MemAddr": "",
-      "MemData": ""
-  },
-  ```
-  
-  最终得到 std 文件
-
-## 3.2 Verilog 机器码及 STD 生成
-
-- 当两次输入文件一致时或指定了 `-b` 时会跳过，除非指定了 `--force`
-- 调用 `Mars` 从 `ASM_NAME` 文件生成机器码保存至 `CODE_NAME` 中，并同时生成标准输出文件 `STD_NAME`
-
-### 3.2.1 生成机器码
-
-- 生成数据段从 0 开始的机器码
-
-  ```bash
-  java -jar Mars\Mars.jar me nc mc CompactDataAtZero dump .text HexText {DATA_PATH} {ASM_PATH}
-  ```
-- 直接得到所需机器码
-
-### 3.2.2 生成标准输出
-
-- 通过增加传递给 Mars 的参数 `std` 格式化输出文件后得到 std
-- 对于每个指令形成如下字典
-
-	```json
-	{
-	    "instr": "",
-	    "code": "",
-	    "asm": "",
-	    "RegWrite": true,
-	    "RegAddr": "",
-	    "RegData": "",
-	    "MemWrite": false,
-	    "MemAddr": "",
-	    "MemData": ""
-	},
-	```
-
-	最终得到 std 文件
-
-## 4.1 导入 Logisim 测试
-
-- `TEST_PATH` 所指定的文件后缀为 .circ
-- Logisim 测试文件在 Logisim 文件夹中
-- 使用命令行输出 `out` 文件
-
-## 4.2 导入 Verilog 测试
-
-- `TEST_PATH` 所指定的文件后缀为 .v
-- 将 `testbranch.v` 文件与输入的顶层模块一起编译，仿真后得到输出
-- 根据输出格式化得到 `out` 文件
-
-## 5.1 Logisim 比对输出
-
-- 对 `code`、`RegWrite`、`RegAddr`、`RegData`、`MemWrite`、`Memaddr`、`MemData` 按 `code` 值不同分情况比对
-- 在第一个错误处退出程序并打印 `std` 和 `out` 中对应数据
-- 全部相同输出 `Accepted`
-
-## 5.2 Verilog 比对输出
-
-- 对 `pc`、`RegAddr`、`RegData`、`MemAddr`、`MemData` 分情况比对
-- 在第一个错误处退出程序并打印 `std` 和 `out` 中对应数据
-- 全部相同输出 `Accepted`
-
-## 6 Bug
-
-- 还没完全测试过
-- 没有实现汇编代码自动生成，只支持用现有的汇编文件测试
-- ~~由于有时候 Mars 在出错时返回值是 0 可能导致程序继续进行而不终止~~
-
-## 7 Update
-
-`2022-11-9`
+### `2022-11-9`
 
 - 为分别测试 P5 P6，将 `--delay-enbled` 参数改为 `-p n` 的形式，用于指定测试形式
 - Mars 添加 `ignore` 参数以忽略溢出和字对齐

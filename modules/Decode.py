@@ -2,11 +2,11 @@
 Author: ltt
 Date: 2022-10-23 10:45:14
 LastEditors: ltt
-LastEditTime: 2022-11-23 08:20:26
+LastEditTime: 2022-11-23 10:36:43
 FilePath: Decode.py
 '''
 
-import sys, getopt, json, re, os
+import sys, getopt, json, os
 
 import modules.Global as Global
 import modules.Base as Base
@@ -33,20 +33,20 @@ def toBin(string):
         if(c == 'f'): ret += "1111"
     return ret.strip(' ')
 
-def findInList(instr,instructions):
-    """在表中查找特定指令"""
-    code = toBin(instr)
-    opcode  = code[::-1][26:32][::-1]
-    funct   = code[::-1][0:6][::-1]
-    for key, value in instructions.items():
-        if value["opcode"] == opcode:
-            if opcode == "000000":
-                if value["funct"] != funct:
-                    continue
-            if (key == "nop" and code != "0"*32): continue
-            return value
-    message = f"指令集中找不到对应指令 {instr} {code}"
-    raise RuntimeError(message) 
+# def findInList(instr,instructions):
+#     """在表中查找特定指令"""
+#     code = toBin(instr)
+#     opcode  = code[::-1][26:32][::-1]
+#     funct   = code[::-1][0:6][::-1]
+#     for key, value in instructions.items():
+#         if value["opcode"] == opcode:
+#             if opcode == "000000":
+#                 if value["funct"] != funct:
+#                     continue
+#             if (key == "nop" and code != "0"*32): continue
+#             return value
+#     message = f"指令集中找不到对应指令 {instr} {code}"
+#     raise RuntimeError(message) 
 
 def merge(DataAtZero, TextAtZero, instructions):
     """合并两个机器码文件"""
@@ -55,8 +55,11 @@ def merge(DataAtZero, TextAtZero, instructions):
     for i in range(n):
         data_str = DataAtZero[i]
         text_str = TextAtZero[i]
-        ret = findInList(data_str, instructions)
-        codes.append(text_str if ret["jump"] else data_str)
+        code = toBin(data_str)
+        opcode  = code[::-1][26:32][::-1]
+        funct   = code[::-1][0:6][::-1]
+        ret = (opcode == "000100")
+        codes.append(text_str if ret else data_str)
     return codes
 
 def signextend(code):
@@ -114,7 +117,7 @@ def init_argv():
         if option in ("-f","--filename"):
             Global.FILE_PATH = value
         if option in ("-n","--number"):
-            Global.TEST_NUM = value
+            Global.TEST_NUM = int(value)
         if option == "--debug":
             Global.DEBUG = True
         if option == "--output-dir":
@@ -168,6 +171,7 @@ def change_dir():
     Global.RESULT_PATH = os.path.join(Global.OUTPUT_DIR, Global.RESULT_NAME)
     Global.STD_PATH = os.path.join(Global.OUTPUT_DIR, Global.STD_NAME)
     Global.OUT_PATH = os.path.join(Global.OUTPUT_DIR, Global.OUT_NAME)
+    Global.TEST_CIRC = os.path.join(Global.OUTPUT_DIR, Global.TEST_CIRC)
     
 if __name__ == "__main__":
 	print(signextend("1111001100"))
