@@ -1,6 +1,6 @@
 // `include "mips.v"
 
-module tb (
+module tb_P5 (
 	
 );
 	reg clk, reset;

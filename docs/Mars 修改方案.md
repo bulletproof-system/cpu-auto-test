@@ -110,17 +110,15 @@
 
 ## 5. 寄存器初值默认为 0
 
-- `D:\LTT\repository\cscore\CPU\CPU_Auto_Test\Mars\mars\mips\hardware\RegisterFile.java`
+- `mars\mips\hardware\MemoryConfigurations.java`
 
-	- `private static Register [] regFile` 
+	- `public class MemoryConfigurations` 
 
 		修改 `$gp` 和 `$sp` 指针默认初值为 0
 
 		```java
-		new Register("$gp", GLOBAL_POINTER_REGISTER, 0),
-		         	// new Register("$gp", GLOBAL_POINTER_REGISTER, Memory.globalPointer),
-		         	new Register("$sp", STACK_POINTER_REGISTER, 0),
-		         	// new Register("$sp", STACK_POINTER_REGISTER, Memory.stackPointer),
+		0x00000000, // Global Pointer $gp)
+		0x00000000, // stack pointer $sp (from SPIM not MIPS)
 		```
-
+		
 		

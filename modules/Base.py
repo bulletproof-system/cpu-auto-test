@@ -2,10 +2,10 @@
 Author: ltt
 Date: 2022-10-26 20:16:07
 LastEditors: ltt
-LastEditTime: 2022-11-14 17:28:30
+LastEditTime: 2022-11-22 23:40:30
 FilePath: Base.py
 '''
-import subprocess
+import subprocess, os
 
 import modules.Global as Global
 
@@ -47,3 +47,16 @@ def test_env():
 class CompareError(RuntimeError):
     def __init__(self, arg=[]):
         self.args = arg
+        
+def list_files(path: str, extension: str):
+    '''
+    遍历 path 目录下所有文件名以 extension 结尾的文件，返回文件名称列表
+    例: list_files('src', '.v')
+    '''
+    result = []
+    for path, dirs, files in os.walk(path):
+        for file in files:
+            if file.endswith(extension):
+                result.append(os.path.join(path, file))
+    return result
+# print(list_files('src', '.v'))

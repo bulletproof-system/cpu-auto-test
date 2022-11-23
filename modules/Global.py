@@ -2,18 +2,15 @@
 Author: ltt
 Date: 2022-10-22 22:17:45
 LastEditors: ltt
-LastEditTime: 2022-11-14 11:01:01
+LastEditTime: 2022-11-23 07:47:29
 FilePath: Global.py
 '''
 
-shortopts = "hf:n:m:bp:"
-longopts = ["help","filename=","number=","max-execution=","force","debug","output-dir=",
-            "asm=","code=","result=","test=","compiler=","argv=","std=","out=","mars=",
-            "logisim=","default-setting="]
+shortopts = "hf:n:P:"
+longopts = ["help","filename=","number=","debug","output-dir=",
+            "test=","compiler=","compile-argv=","gen=","gen-argv="]
 FILE_PATH = "FILE_PATH"
 TEST_NUM = 100
-SKIP = "SKIP"
-FORCE = "FORCE"
 DEBUG = "DEBUG"
 OUTPUT_DIR = "OUTPUT_DIR"
 ASM_NAME = "ASM_NAME"
@@ -22,7 +19,8 @@ CODE_NAME = "CODE_NAME"
 CODE_PATH = "CODE_PATH"
 RESULT_NAME = "RESULT_NAME"
 RESULT_PATH = "RESULT_PATH"
-TEST_PATH = "TEST_PATH"
+TEST = "TEST"
+TEST_FILES = []
 TEST_CIRC = "TEST_CIRC"
 STD_NAME = "STD_NAME"
 STD_PATH = "STD_PATH"
@@ -33,6 +31,8 @@ LOGISIM_PATH = "LOGISIM_PATH"
 P = 5
 COMPILER_TYPE = "COMPILER_TYPE"
 COMPILER_ARGV = "COMPILER_ARGV"
+GENERATOR = ""
+GEN_ARGV = ""
 CLASSIFY = {}
 ENBLED_INSTRUCTION = []
 INSTRUCTION_DICT = {}
@@ -48,5 +48,4 @@ ROM =r"""<comp lib=\"4\" loc=\"\([0-9]*,[0-9]*\)\" name=\"ROM\">
       <a name=\"contents\">addr\/data:[0-9a-zA-Z \n]*
 <\/a>
     <\/comp>"""
-P5_TEST_BRANCH = ""
 label_num = 0

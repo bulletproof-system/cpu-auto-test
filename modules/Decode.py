@@ -2,13 +2,14 @@
 Author: ltt
 Date: 2022-10-23 10:45:14
 LastEditors: ltt
-LastEditTime: 2022-11-14 19:27:54
+LastEditTime: 2022-11-23 08:20:26
 FilePath: Decode.py
 '''
 
-import sys, getopt, json, re, hashlib, os
+import sys, getopt, json, re, os
 
 import modules.Global as Global
+import modules.Base as Base
 
 def toBin(string):
     """十六进制字符串转二进制"""
@@ -70,14 +71,12 @@ def load_setting(setting):
     """加载配置"""
     Global.FILE_PATH = setting["FILE_PATH"]
     Global.TEST_NUM = setting["TEST_NUM"]
-    Global.SKIP = (setting["SKIP"] == "true")
-    Global.FORCE = (setting["FORCE"] == "true")
     Global.DEBUG = (setting["DEBUG"] == "true")
     Global.OUTPUT_DIR = setting["OUTPUT_DIR"]
     Global.ASM_NAME = setting["ASM_NAME"]
     Global.CODE_NAME  = setting["CODE_NAME"]
     Global.RESULT_NAME  = setting["RESULT_NAME"]
-    Global.TEST_PATH  = setting["TEST_PATH"]
+    Global.TEST  = setting["TEST"] 
     Global.TEST_CIRC  = setting["TEST_CIRC"]
     Global.STD_NAME  = setting["STD_NAME"]
     Global.OUT_NAME  = setting["OUT_NAME"]
@@ -86,7 +85,6 @@ def load_setting(setting):
     Global.P  = setting["P"]
     Global.COMPILER_TYPE  = setting["COMPILER_TYPE"]
     Global.COMPILER_ARGV  = setting["COMPILER_ARGV"]
-    Global.TEST_TYPE  = setting["TEST_TYPE"]
     Global.CLASSIFY = setting["CLASSIFY"]
     # Global.ENBLED_INSTRUCTION = setting["ENBLED_INSTRUCTION"]
     # Global.INSTRUCTION_DICT  = setting["INSTRUCTION_DICT"]
@@ -100,26 +98,12 @@ def init_argv():
     except getopt.GetoptError as err:
         print(err)
         sys.exit(2)
-    use_default_setting = True
-    for option, value in opts:
-        if option in ("--default-setting"):
-            setting_file_name = value
-            try:
-                with open(setting_file_name) as setting_file:
-                    setting = json.load(setting_file)
-            except:
-                print(f"找不到 {setting_file_name}")
-                sys.exit(2)
-            
-            use_default_setting = False
-            break
-    if(use_default_setting):
-        try:
-            with open(setting_file_name) as setting_file:
-                setting = json.load(setting_file)
-        except:
-            print(f"找不到 {setting_file_name}")
-            sys.exit(2)
+    try:
+        with open(setting_file_name) as setting_file:
+            setting = json.load(setting_file)
+    except:
+        print(f"找不到 {setting_file_name}")
+        sys.exit(2)
     if(args != []):
         print(f"多余参数 {args}")
     load_setting(setting)
@@ -131,56 +115,28 @@ def init_argv():
             Global.FILE_PATH = value
         if option in ("-n","--number"):
             Global.TEST_NUM = value
-        if option in ("-b"):
-            Global.SKIP = True
-        if option == "--force":
-            Global.FORCE = True
         if option == "--debug":
             Global.DEBUG = True
-        if option in ("--output-dir"):
+        if option == "--output-dir":
             Global.OUTPUT_DIR = value
-        if option in ("--asm"):
-            Global.ASM_NAME = value
-        if option in ("--code"):
-            Global.ASM_NAME = value
-        if option in ("--result"):
-            Global.RESULT_NAME = value
-        if option in ("--test"):
-            Global.TEST_PATH = value
-        if option in ("--compilor"):
+        if option == "--test":
+            Global.TEST = value
+        if option == "--compilor":
             Global.COMPILER_TYPE = value
-        if option in ("--argv"):
+        if option == "--compile-argv":
             Global.COMPILER_ARGV = value
-        if option in ("--std"):
-            Global.STD_NAME = value
-        if option in ("--out"):
-            Global.OUT_NAME = value
-        if option in ("--mars"):
-            Global.MARS_PATH = value
-        if option in ("--logisim"):
-            Global.LOGISIM_PATH = value
-        if option in ("-p"):
+        if option == "-P":
             Global.P = int(value)
+        if option == "--gen":
+            Global.GENERATOR = value
+        if option == "--gen-argv":
+            Global.GEN_ARGV = value
     change_dir()
     Global.ENBLED_INSTRUCTION = setting[f"ENBLED_INSTRUCTION_P{Global.P}"]
+    if(Global.P != 3):
+        Global.TEST_FILES = Base.list_files(Global.TEST, ".v") 
     construct_instruction_dict()
-    test_path = Global.TEST_PATH
-    if(re.search(".circ",test_path) != None):
-        Global.TEST_TYPE = "Logisim"
-    elif(re.search(".v",test_path) != None):
-        Global.TEST_TYPE = "Verilog"
-    else:
-        pass
-    if(Global.FORCE): 
-        Global.SKIP = False
     return setting
-
-def get_file_md5(file_path):
-    """生成文件 MD5 值"""
-    with open(file_path, "r", encoding="utf-8") as fp:
-        file_str = fp.read()
-        file_md5 = hashlib.md5(file_str.encode("utf-8")).hexdigest()
-    return file_md5
 
 def construct_instruction_dict():
     """构造指令字典"""
@@ -209,7 +165,7 @@ def construct_instruction_dict():
 def change_dir():
     Global.ASM_PATH = os.path.join(Global.OUTPUT_DIR,Global.ASM_NAME)
     Global.CODE_PATH = os.path.join(Global.OUTPUT_DIR, Global.CODE_NAME)
-    Global.RESULT_PATH = os.path.join(f"{Global.OUTPUT_DIR}", Global.RESULT_NAME)
+    Global.RESULT_PATH = os.path.join(Global.OUTPUT_DIR, Global.RESULT_NAME)
     Global.STD_PATH = os.path.join(Global.OUTPUT_DIR, Global.STD_NAME)
     Global.OUT_PATH = os.path.join(Global.OUTPUT_DIR, Global.OUT_NAME)
     

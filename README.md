@@ -1,10 +1,5 @@
 # 利用 python 对 Logisim/Verilog 中搭建的 CPU 进行自动化测试
 
-- 主目录下有一个样例文件夹 `example`，其中的两个 `bat` 分别用于测试 `.circ` 和 `.v` 文件
-- 选择 python 原因：~~不想写 JAVA~~
-- 一人役
-- 改动 Mars 后 jar 包太大提交不了，故提交的压缩包中只有项目的 README.md 和 Mars 修改方案.md
-- 有一个共享测试数据的想法，但还没实现
 - [项目地址](https://gitee.com/LTT-Repository/cpu-auto-test) 
 
 [toc]
@@ -32,6 +27,7 @@
   - 输入 `std` 可以打印每条指令的执行信息
   - 忽略 `add` 和 `sub` 溢出
   - 寄存器堆中所有寄存器初值都为 `0` 
+  - 忽略地址对齐
   - 修改内容见 [Mars 修改方案](docs/Mars 修改方案.md)
 - Logisim.jar
   - 没有改动

@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-22 22:12:33
 LastEditors: ltt
-LastEditTime: 2022-11-14 17:10:21
+LastEditTime: 2022-11-23 00:20:36
 FilePath: auto_test.py
 '''
 import modules.Base as Base
@@ -15,24 +15,21 @@ import modules.Comparator as Comparator
 
 def main():
     
-    test_type = Global.TEST_TYPE
-    if(test_type == "Logisim"):
-        Generator.Logisim()
-        Comparator.Logisim()
-        pass
-    elif(test_type == "Verilog"):
-        if(Global.P == 4):
-            Generator.P4()
-        elif (Global.P == 5):
-            Generator.P5()
-        elif (Global.P == 6):
-            Generator.P6() 
-        else:
-            pass
+    P = Global.P
+    if(P == 3):
+        Generator.P3()
+        Comparator.P3()
+    if(Global.P == 4):
+        Generator.P4()
+        Comparator.Verilog()
+    elif (Global.P == 5):
+        Generator.P5()
+        Comparator.Verilog()
+    elif (Global.P == 6):
+        Generator.P6() 
         Comparator.Verilog()
     else:
-        print("无效测试文件名")
-        raise RuntimeError("无效测试文件名")
+        pass
     return 0
     
 if __name__ == "__main__":

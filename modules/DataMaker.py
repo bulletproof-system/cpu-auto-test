@@ -2,13 +2,14 @@
 Author: ltt
 Date: 2022-11-07 11:14:05
 LastEditors: ltt
-LastEditTime: 2022-11-14 19:09:38
+LastEditTime: 2022-11-23 08:36:53
 FilePath: DataMaker.py
 '''
 
 import modules.InstrGenerator as IG
 import modules.Global as Global
-import random
+import modules.Base as Base
+import random, os
 
 # def rand
 
@@ -124,4 +125,40 @@ def generate_case(label, used_reg, MEM, MD, Jump):
             ret += generate_case(label,  used_reg_rd, False, False, False)
     return ret
 
+def makedata(num = 10):
+    """内置数据生成器"""
+    ret = ".text\n"
+    for id in range(1, 11):
+        data = generate_group(id,"case",num)
+        for instr in data:
+            ret += IG.to_str(instr, '\t')
+    return ret
+
+def get_data_from():
+    """外接数据生成器"""
+    gen_path = Global.GENERATOR
+    gen_argv = Global.GEN_ARGV
+    (path, fullname) = os.path.split(gen_path)
+    (name, suffix) = os.path.splitext(fullname)
+    # print(path, "|", name, "|", suffix)
+    if(suffix == "" or suffix == ".exe"):
+        data = Base.run(["cd", path, "&&", fullname, gen_argv])
+        try:
+            with open(os.path.join(path, "asm.asm"), "r") as fp:
+                data = fp.read()
+        except OSError:
+            pass
+    elif(suffix == ".py"):
+        data = Base.run(["cd", path, "&&", "python", fullname, gen_argv])
+        try:
+            with open(os.path.join(path, "asm.asm"), "r") as fp:
+                data = fp.read()
+        except OSError:
+            pass
+    else:
+        print("不支持的生成器后缀")
+        exit(2)
+    return data
     
+if __name__ == "__main__":
+    get_data_from(r"D:\LTT\repository\cscore\CPU\CPU_Auto_Test\modules\DataMaker")

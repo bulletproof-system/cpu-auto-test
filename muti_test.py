@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-11-07 20:52:32
 LastEditors: ltt
-LastEditTime: 2022-11-14 18:06:38
+LastEditTime: 2022-11-23 08:31:47
 FilePath: muti_test.py
 '''
 import modules.Base as Base
@@ -16,14 +16,14 @@ import auto_test, os
 def main():
     wrong_test = []
     for i in range(1, Global.TEST_NUM+1):
-        Global.FILE_PATH = f".\\test_file\\test_{i}.asm"
+        Global.FILE_PATH = os.path.join("test_file", f"P{Global.P}_test_{i}.asm")
         with open(Global.FILE_PATH, "w") as fp:
-            for id in range(1, 11):
-                ret = DataMaker.generate_group(id,num=10)
-                fp.write(".text\n")
-                for instr in ret:
-                    fp.write(IG.to_str(instr, '\t'))
-        Global.OUTPUT_DIR = f".\\output\\test_{i}"
+            if Global.GENERATOR == "":
+                data = DataMaker.makedata(10)
+            else:
+                data = DataMaker.get_data_from()
+            fp.write(data)
+        Global.OUTPUT_DIR = os.path.join("output", f"P{Global.P}_test_{i}")
         Decode.change_dir()
         if not os.path.exists(Global.OUTPUT_DIR):
             os.mkdir(Global.OUTPUT_DIR)

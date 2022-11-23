@@ -155,6 +155,8 @@ output/test.circ
 output/*
 temp/*
 test_file/*
+mips_files/*
 dump.bat
+CO.exe
 gen.exe
 test.asm

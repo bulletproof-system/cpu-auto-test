@@ -2,10 +2,10 @@
 Author: ltt
 Date: 2022-10-26 20:19:34
 LastEditors: ltt
-LastEditTime: 2022-11-14 19:28:24
+LastEditTime: 2022-11-23 07:29:16
 FilePath: Generator.py
 '''
-import re, json, os
+import re, json, os, shutil
 from functools import cmp_to_key
 
 import modules.Base as Base
@@ -13,11 +13,7 @@ import modules.Global as Global
 import modules.Decode as Decode
 
 
-def generate_instruction():
-    """生成指令"""
-    pass
-
-def generate_code_Logisim():
+def generate_code_P3():
     """生成 Logisim 机器码和标准输出"""
     """生成机器码"""
     asm, mars = Global.ASM_PATH, Global.MARS_PATH
@@ -34,7 +30,7 @@ def generate_code_Logisim():
     with open(text, "r") as TextAtZeroFile:
         TextAtZero = TextAtZeroFile.readlines()
     codes = Decode.merge(DataAtZero, TextAtZero,
-                         Global.INSTRUCTION_LIST)
+                         Global.INSTRUCTION_DICT)
     with open(code_path, "w") as code_file:
         code_file.write("v2.0 raw\n")
         code_file.writelines(codes)  # 合并后机器码储存在 code_path 对应文件中
@@ -78,10 +74,10 @@ def generate_code_Logisim():
         std_file.write(json.dumps(std, sort_keys=False, indent=4, separators=(',', ': ')))
     if(debug): print("generating std finish (Logisim)")
     return
-def generate_out_Logisim():
+def generate_out_P3():
     """获取 Logisim 输出文件"""
     debug = Global.DEBUG
-    test_path, test_circ = Global.TEST_PATH, Global.TEST_CIRC
+    test_path, test_circ = Global.TEST, Global.TEST_CIRC
     logisim = Global.LOGISIM_PATH
     code_path, out_path = Global.CODE_PATH, Global.OUT_PATH
     if(debug): print("generating out (Logisim)")
@@ -125,16 +121,11 @@ def generate_out_Logisim():
                        indent=4, separators=(',', ': ')))
     if(debug): print("generating out finish (Logisim)")
     return
-def Logisim():
+def P3():
     """测试 Logisim"""
-    skip = Global.SKIP
-    if (skip == False):
-        if (Global.FILE_PATH == ""):
-            generate_instruction()
-        else:
-            Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
-            generate_code_Logisim()
-    generate_out_Logisim()
+    Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
+    generate_code_P3()
+    generate_out_P3()
 
 
 def generate_code_P4():
@@ -191,18 +182,23 @@ def generate_code_P4():
 def generate_out_P4():
     """获取P4 CPU 输出文件"""
     debug = Global.DEBUG
-    compiler,argv = Global.COMPILER_TYPE,Global.COMPILER_ARGV
-    test_path,out_path = Global.TEST_PATH,Global.OUT_PATH
-    code_path = os.path.join(f"{os.getcwd()}", Global.CODE_PATH)
-    temp = os.path.join(os.getcwd(), "temp", "out")
-    test_branch = os.path.join(os.getcwd(), "Verilog", "P4.v")
     if(debug): print("generating out (P4)")
+    compiler,argv = Global.COMPILER_TYPE,Global.COMPILER_ARGV
+    out_path = Global.OUT_PATH
+    code_path = Global.CODE_PATH
+    test_branch = os.path.join("Verilog", "P4.v")
+    shutil.rmtree("mips_files")
+    os.mkdir("mips_files")
+    with open("mips_files/.gitignore", "w") as fp:
+        fp.write("!.gitignore")
+    shutil.copy(test_branch, "mips_files")
+    shutil.copy(code_path, "mips_files")
+    for file_path in Global.TEST_FILES:
+        shutil.copy(file_path, "mips_files")
     if(compiler == "iverilog"):
-        (test_path, test_name) = os.path.split(test_path)
-        Base.run(["cd",test_path,"&&","copy",code_path,"code.txt"])
-        ret = Base.run(["cd",test_path,
-                        "&&","iverilog",argv,"-o",temp,test_name,test_branch, 
-                        "&&", "vvp", temp], errdesc="编译错误")
+        ret = Base.run(["cd", "mips_files",
+                        "&&", "iverilog",argv,"-o","out", "-s", "tb_P4", "*.v", 
+                        "&&", "vvp", "out"], errdesc="编译错误")
         match = re.findall(r"@.*\n",ret)
         # print(match)
         out = []
@@ -231,13 +227,8 @@ def generate_out_P4():
     return
 def P4():
     """测试单周期CPU"""
-    skip = Global.SKIP
-    if (skip == False):
-        if (Global.FILE_PATH == ""):
-            generate_instruction()
-        else:
-            Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
-            generate_code_P4()
+    Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
+    generate_code_P4()
     generate_out_P4()
             
 def comp(a, b):
@@ -302,18 +293,23 @@ def generate_code_P5():
 def generate_out_P5():
     """获取P5 CPU 输出文件"""
     debug = Global.DEBUG
-    compiler,argv = Global.COMPILER_TYPE,Global.COMPILER_ARGV
-    test_path,out_path = Global.TEST_PATH,Global.OUT_PATH
-    code_path = os.path.join(f"{os.getcwd()}", Global.CODE_PATH)
-    temp = os.path.join(os.getcwd(), "temp", "out")
-    test_branch = os.path.join(os.getcwd(), "Verilog", "P5.v")
     if(debug): print("generating out (P5)")
+    compiler,argv = Global.COMPILER_TYPE,Global.COMPILER_ARGV
+    out_path = Global.OUT_PATH
+    code_path = Global.CODE_PATH
+    test_branch = os.path.join("Verilog", "P5.v")
+    shutil.rmtree("mips_files")
+    os.mkdir("mips_files")
+    with open("mips_files/.gitignore", "w") as fp:
+        fp.write("!.gitignore")
+    shutil.copy(test_branch, "mips_files")
+    shutil.copy(code_path, "mips_files")
+    for file_path in Global.TEST_FILES:
+        shutil.copy(file_path, "mips_files")
     if(compiler == "iverilog"):
-        (test_path, test_name) = os.path.split(test_path)
-        Base.run(["cd",test_path,"&&","copy",code_path,"code.txt"])
-        ret = Base.run(["cd",test_path,
-                        "&&","iverilog",argv,"-o",temp,test_name,test_branch, 
-                        "&&", "vvp", temp], errdesc="编译错误")
+        ret = Base.run(["cd", "mips_files",
+                        "&&", "iverilog",argv,"-o","out", "-s", "tb_P5", "*.v", 
+                        "&&", "vvp", "out"], errdesc="编译错误")
         match = re.findall(r"[0-9]*@.*\n",ret)
         # print(match)
         out = []
@@ -346,13 +342,8 @@ def generate_out_P5():
     return        
 def P5():
     """测试P5 CPU"""
-    skip = Global.SKIP
-    if (skip == False):
-        if (Global.FILE_PATH == ""):
-            generate_instruction()
-        else:
-            Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
-            generate_code_P5()
+    Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
+    generate_code_P5()
     generate_out_P5()
     pass
 
@@ -414,18 +405,23 @@ def generate_code_P6():
 def generate_out_P6():
     """获取 P6 CPU 输出文件"""
     debug = Global.DEBUG
-    compiler,argv = Global.COMPILER_TYPE,Global.COMPILER_ARGV
-    test_path,out_path = Global.TEST_PATH,Global.OUT_PATH
-    code_path = os.path.join(f"{os.getcwd()}", Global.CODE_PATH)
-    temp = os.path.join(os.getcwd(), "temp", "out")
-    test_branch = os.path.join(os.getcwd(), "Verilog", "P6.v")
     if(debug): print("generating out (P6)")
+    compiler,argv = Global.COMPILER_TYPE,Global.COMPILER_ARGV
+    out_path = Global.OUT_PATH
+    code_path = Global.CODE_PATH
+    test_branch = os.path.join("Verilog", "P6.v")
+    shutil.rmtree("mips_files")
+    os.mkdir("mips_files")
+    with open("mips_files/.gitignore", "w") as fp:
+        fp.write("!.gitignore")
+    shutil.copy(test_branch, "mips_files")
+    shutil.copy(code_path, "mips_files")
+    for file_path in Global.TEST_FILES:
+        shutil.copy(file_path, "mips_files")
     if(compiler == "iverilog"):
-        (test_path, test_name) = os.path.split(test_path)
-        Base.run(["cd",test_path,"&&","copy",code_path,"code.txt"])
-        ret = Base.run(["cd",test_path,
-                        "&&","iverilog",argv,"-o",temp,test_name,test_branch, 
-                        "&&", "vvp", temp], errdesc="编译错误")
+        ret = Base.run(["cd", "mips_files",
+                        "&&", "iverilog",argv,"-o","out", "-s", "tb_P6", "*.v", 
+                        "&&", "vvp", "out"], errdesc="编译错误")
         match = re.findall(r"[0-9]*@.*\n",ret)
         # print(match)
         out = []
@@ -458,12 +454,7 @@ def generate_out_P6():
     return  
 def P6():
     """测试P6 CPU"""
-    skip = Global.SKIP
-    if (skip == False):
-        if (Global.FILE_PATH == ""):
-            generate_instruction()
-        else:
-            Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
-            generate_code_P6()
+    Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
+    generate_code_P6()
     generate_out_P6()
     pass

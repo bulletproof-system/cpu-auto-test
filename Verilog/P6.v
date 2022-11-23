@@ -3,7 +3,7 @@
 // `include "mips.v"
 // `endif
 
-module mips_txt;
+module tb_P6;
 
     reg clk;
     reg reset;
