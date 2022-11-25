@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-26 20:19:34
 LastEditors: ltt
-LastEditTime: 2022-11-24 10:46:23
+LastEditTime: 2022-11-25 11:33:43
 FilePath: Generator.py
 '''
 import re, json, os, shutil
@@ -482,50 +482,87 @@ def generate_code_P7():
     if(debug): print("generating code finish(P7)")
     test_path = Global.TEST
     shutil.copy(code_path, test_path)
-    return
+    # return
     """生成标准输出"""
     std_path = Global.STD_PATH
     codes += ["00000000"]
     std = []
-    if(debug): print("generating std (P6)")
-    ret = Base.run(["java","-jar",mars,"ignore","ae1", "ex","db","me","nc","lg","mc","CompactDataAtZero",asm]).split('\n')
+    if(debug): print("generating std (P7)")
+    ret = Base.run(["java","-jar",mars,"ae1", "10000", "ex","db","me","nc","lg","mc","LargeText",asm]).split('\n')
     for str in ret:
         ans = {}
-        if(str[0:2] != "pc"): continue
-        # 获取 pc 及指令
-        pc = ans["pc"] = "0x"+str[6:14]
-        instr = ans["instr"] = str[24:32]
-        ans["asm"] = re.search(r"asm:[^\r^\n]*",str).group()[5:]
-        if(debug): print(f"generating {str}")
-        
-        # 根据指令获取输出
-        attr,code = Global.INSTRUCTION_DICT.get(ans["asm"].split(' ')[0]),Decode.toBin(instr)
-        if(attr == None):
-            raise RuntimeError("指令集中没有该指令:"+ans["asm"])
-        ans["code"] = code
-        if(code == "0"*32): continue
-        if (attr["RegWrite"] == True):
+        if(str == ""): break
+        ans["instr"] = ans["asm"] = "unknown"
+        ans["pc"] = "0x" + str[1:9]
+        if(str[11] == "$"):
             ans["RegWrite"] = True
-            ans["RegAddr"] = str[34:36]
-            ans["RegData"] = "0x"+str[40:48]
-            if(ans["RegAddr"] == " 0"): continue # 过滤 $0 寄存器
-        else:
-            ans["RegWrite"] = False   
-        if (attr["MemWrite"] == True):
-            ans["MemWrite"] = True
-            ans["MemAddr"] = str[34:44]
-            ans["MemData"] = "0x"+str[48:56]
-        else:
             ans["MemWrite"] = False
-    
-        # if (attr["RegWrite"] or attr["MemWrite"]):
+            ans["RegAddr"] = str[12:14]
+            ans["RegData"] = "0x" + str[18:26]
+        else:
+            ans["RegWrite"] = False
+            ans["MemWrite"] = True
+            ans["MemAddr"] = "0x" + str[12:20]
+            ans["MemData"] = "0x" + str[25:33]
         std.append(ans)
     with open(std_path, "w") as std_file:
         std_file.write(json.dumps(std, sort_keys=False, indent=4, separators=(',', ': ')))
-    if(debug): print("generating code finish (P6)")    
+    if(debug): print("generating code finish (P7)")    
     return
     
+def generate_out_P7():
+    """获取 P7 CPU 输出文件"""
+    debug = Global.DEBUG
+    if(debug): print("generating out (P7)")
+    compiler,argv = Global.COMPILER_TYPE,Global.COMPILER_ARGV
+    out_path = Global.OUT_PATH
+    code_path = Global.CODE_PATH
+    test_branch = os.path.join("Verilog", "P7.v")
+    shutil.rmtree("mips_files")
+    os.mkdir("mips_files")
+    with open("mips_files/.gitignore", "w") as fp:
+        fp.write("!.gitignore")
+    for file_path in Global.TEST_FILES:
+        shutil.copy(file_path, "mips_files")
+    shutil.copy(test_branch, "mips_files")
+    shutil.copy(code_path, "mips_files")
+    if(compiler == "iverilog"):
+        ret = Base.run(["cd", "mips_files",
+                        "&&", "iverilog",argv,"-o","out", "-s", "tb_P7", "*.v", 
+                        "&&", "vvp", "out"], errdesc="编译错误")
+        match = re.findall(r"[0-9]*@.*\n",ret)
+        # print(match)
+        out = []
+        for s in match:
+            ans = {}
+            ans["time"] = re.search(r"[0-9]*@", s).group()[:-1]
+            if(re.search(r"@.{10}\$.{14}[\r\n]+", s) != None):
+                s = re.search(r"@.{10}\$.{14}[\r\n]+", s).group()
+                ans["pc"] = "0x"+s[1:9]
+                ans["RegWrite"] = True
+                ans["MemWrite"] = False
+                ans["RegAddr"] = s[12:14]
+                ans["RegData"] = "0x"+s[-10:-2]
+                if(ans["RegAddr"] == " 0"): continue # 过滤 $0 寄存器
+            else:
+                s = re.search(r"@.{10}\*.{20}[\r\n]+", s).group()
+                ans["pc"] = "0x"+s[1:9]
+                ans["MemWrite"] = True
+                ans["RegWrite"] = False
+                ans["MemAddr"] = "0x"+s[12:20]
+                ans["MemData"] = "0x"+s[-10:-2]
+            out.append(ans)
+    else:
+        pass
+    out.sort(key=cmp_to_key(comp))
+    with open(out_path,"w") as out_file:
+            out_file.write(json.dumps(out, sort_keys=False,
+                           indent=4, separators=(',', ': ')))
+    if(debug): print("generating out finish (P7)")
+    return    
+
 def P7():
     """测试P7 CPU"""
     Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
     generate_code_P7()
+    generate_out_P7()
