@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-22 22:12:33
 LastEditors: ltt
-LastEditTime: 2022-11-23 00:20:36
+LastEditTime: 2022-11-24 09:50:09
 FilePath: auto_test.py
 '''
 import modules.Base as Base
@@ -27,6 +27,9 @@ def main():
         Comparator.Verilog()
     elif (Global.P == 6):
         Generator.P6() 
+        Comparator.Verilog()
+    elif (Global.P == 7):
+        Generator.P7() 
         Comparator.Verilog()
     else:
         pass

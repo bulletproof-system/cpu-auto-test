@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-26 20:19:34
 LastEditors: ltt
-LastEditTime: 2022-11-23 10:16:13
+LastEditTime: 2022-11-24 10:46:23
 FilePath: Generator.py
 '''
 import re, json, os, shutil
@@ -400,8 +400,6 @@ def generate_code_P6():
         std_file.write(json.dumps(std, sort_keys=False, indent=4, separators=(',', ': ')))
     if(debug): print("generating code finish (P6)")    
     return
-    pass
-
 def generate_out_P6():
     """获取 P6 CPU 输出文件"""
     debug = Global.DEBUG
@@ -457,4 +455,77 @@ def P6():
     Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
     generate_code_P6()
     generate_out_P6()
-    pass
+
+def generate_code_P7():
+    """生成 P7 机器码和标准输出"""
+    """生成机器码"""
+    asm, mars = Global.ASM_PATH, Global.MARS_P7_PATH
+    code_path = Global.CODE_PATH 
+    ktext_path, text_path = os.path.join("temp", "ktext.txt"), os.path.join("temp", "text.txt")
+    debug = Global.DEBUG
+    if(debug): print("generating code (P7)")
+    Base.run(["java", "-jar", mars,"ae1","db", "a","me", "nc", "mc", "CompactDataAtZero", "dump", ".text", "HexText", text_path, asm])
+    Base.run(["java", "-jar", mars,"ae1","db", "a","me", "nc", "mc", "CompactDataAtZero", "dump", "0x4180-0x6ffc", "HexText", ktext_path, asm])
+    with open(text_path, "r") as text_file:
+        text = text_file.readlines()
+    with open(ktext_path, "r") as ktext_file:
+        ktext = ktext_file.readlines()
+    with open(code_path, "w") as code_file:
+        codes = ["00000000\n" for _ in range(4096)]
+        for (i, text_code) in zip(range(len(text)), text):
+            codes[i] = text_code
+        for (i, ktext_code) in zip(range((0x4180-0x3000)//4, (0x4180-0x3000)//4+len(ktext)), ktext):
+            codes[i] = ktext_code
+        code_file.write(''.join(codes))
+    # with open(code_path, "w") as code_file:
+    #     codes = code_file.readlines()
+    if(debug): print("generating code finish(P7)")
+    test_path = Global.TEST
+    shutil.copy(code_path, test_path)
+    return
+    """生成标准输出"""
+    std_path = Global.STD_PATH
+    codes += ["00000000"]
+    std = []
+    if(debug): print("generating std (P6)")
+    ret = Base.run(["java","-jar",mars,"ignore","ae1", "ex","db","me","nc","lg","mc","CompactDataAtZero",asm]).split('\n')
+    for str in ret:
+        ans = {}
+        if(str[0:2] != "pc"): continue
+        # 获取 pc 及指令
+        pc = ans["pc"] = "0x"+str[6:14]
+        instr = ans["instr"] = str[24:32]
+        ans["asm"] = re.search(r"asm:[^\r^\n]*",str).group()[5:]
+        if(debug): print(f"generating {str}")
+        
+        # 根据指令获取输出
+        attr,code = Global.INSTRUCTION_DICT.get(ans["asm"].split(' ')[0]),Decode.toBin(instr)
+        if(attr == None):
+            raise RuntimeError("指令集中没有该指令:"+ans["asm"])
+        ans["code"] = code
+        if(code == "0"*32): continue
+        if (attr["RegWrite"] == True):
+            ans["RegWrite"] = True
+            ans["RegAddr"] = str[34:36]
+            ans["RegData"] = "0x"+str[40:48]
+            if(ans["RegAddr"] == " 0"): continue # 过滤 $0 寄存器
+        else:
+            ans["RegWrite"] = False   
+        if (attr["MemWrite"] == True):
+            ans["MemWrite"] = True
+            ans["MemAddr"] = str[34:44]
+            ans["MemData"] = "0x"+str[48:56]
+        else:
+            ans["MemWrite"] = False
+    
+        # if (attr["RegWrite"] or attr["MemWrite"]):
+        std.append(ans)
+    with open(std_path, "w") as std_file:
+        std_file.write(json.dumps(std, sort_keys=False, indent=4, separators=(',', ': ')))
+    if(debug): print("generating code finish (P6)")    
+    return
+    
+def P7():
+    """测试P7 CPU"""
+    Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
+    generate_code_P7()

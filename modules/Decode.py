@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-23 10:45:14
 LastEditors: ltt
-LastEditTime: 2022-11-23 10:36:43
+LastEditTime: 2022-11-24 09:52:19
 FilePath: Decode.py
 '''
 
@@ -32,21 +32,6 @@ def toBin(string):
         if(c == 'e'): ret += "1110"
         if(c == 'f'): ret += "1111"
     return ret.strip(' ')
-
-# def findInList(instr,instructions):
-#     """在表中查找特定指令"""
-#     code = toBin(instr)
-#     opcode  = code[::-1][26:32][::-1]
-#     funct   = code[::-1][0:6][::-1]
-#     for key, value in instructions.items():
-#         if value["opcode"] == opcode:
-#             if opcode == "000000":
-#                 if value["funct"] != funct:
-#                     continue
-#             if (key == "nop" and code != "0"*32): continue
-#             return value
-#     message = f"指令集中找不到对应指令 {instr} {code}"
-#     raise RuntimeError(message) 
 
 def merge(DataAtZero, TextAtZero, instructions):
     """合并两个机器码文件"""
@@ -84,6 +69,7 @@ def load_setting(setting):
     Global.STD_NAME  = setting["STD_NAME"]
     Global.OUT_NAME  = setting["OUT_NAME"]
     Global.MARS_PATH  = setting["MARS_PATH"]
+    Global.MARS_P7_PATH  = setting["MARS_P7_PATH"]
     Global.LOGISIM_PATH  = setting["LOGISIM_PATH"]
     Global.P  = setting["P"]
     Global.COMPILER_TYPE  = setting["COMPILER_TYPE"]

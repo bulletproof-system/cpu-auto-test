@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-22 22:17:45
 LastEditors: ltt
-LastEditTime: 2022-11-23 07:47:29
+LastEditTime: 2022-11-24 09:52:01
 FilePath: Global.py
 '''
 
@@ -27,6 +27,7 @@ STD_PATH = "STD_PATH"
 OUT_NAME = "OUT_NAME"
 OUT_PATH = "OUT_PATH"
 MARS_PATH = "MARS_PATH"
+MARS_P7_PATH = "MARS_P7_PATH"
 LOGISIM_PATH = "LOGISIM_PATH"
 P = 5
 COMPILER_TYPE = "COMPILER_TYPE"
