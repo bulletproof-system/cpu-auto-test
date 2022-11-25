@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-26 20:19:34
 LastEditors: ltt
-LastEditTime: 2022-11-25 11:33:43
+LastEditTime: 2022-11-25 12:03:14
 FilePath: Generator.py
 '''
 import re, json, os, shutil
@@ -144,6 +144,9 @@ def generate_code_P4():
     codes += ["00000000"]
     std = []
     if(debug): print("generating std (P4)")
+    if(Global.COPY):
+        test_path = Global.TEST
+        shutil.copy(code_path, test_path)
     ret = Base.run(["java","-jar",mars,"ignore","ae1","me","nc","std","mc","CompactDataAtZero",asm]).split('\n')
     for str in ret:
         ans = {}
@@ -249,6 +252,9 @@ def generate_code_P5():
     with open(code_path, "r") as code_file:
         codes = code_file.readlines()
     if(debug): print("generating code finish(P5)")
+    if(Global.COPY):
+        test_path = Global.TEST
+        shutil.copy(code_path, test_path)
     """生成标准输出"""
     std_path = Global.STD_PATH
     codes += ["00000000"]
@@ -359,6 +365,9 @@ def generate_code_P6():
     with open(code_path, "r") as code_file:
         codes = code_file.readlines()
     if(debug): print("generating code finish(P6)")
+    if(Global.COPY):
+        test_path = Global.TEST
+        shutil.copy(code_path, test_path)
     """生成标准输出"""
     std_path = Global.STD_PATH
     codes += ["00000000"]
@@ -480,8 +489,9 @@ def generate_code_P7():
     # with open(code_path, "w") as code_file:
     #     codes = code_file.readlines()
     if(debug): print("generating code finish(P7)")
-    test_path = Global.TEST
-    shutil.copy(code_path, test_path)
+    if(Global.COPY):
+        test_path = Global.TEST
+        shutil.copy(code_path, test_path)
     # return
     """生成标准输出"""
     std_path = Global.STD_PATH

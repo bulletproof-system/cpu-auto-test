@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-23 10:45:14
 LastEditors: ltt
-LastEditTime: 2022-11-24 09:52:19
+LastEditTime: 2022-11-25 12:01:08
 FilePath: Decode.py
 '''
 
@@ -75,6 +75,7 @@ def load_setting(setting):
     Global.COMPILER_TYPE  = setting["COMPILER_TYPE"]
     Global.COMPILER_ARGV  = setting["COMPILER_ARGV"]
     Global.CLASSIFY = setting["CLASSIFY"]
+    Global.COPY = (setting["COPY"] == "false")
     # Global.ENBLED_INSTRUCTION = setting["ENBLED_INSTRUCTION"]
     # Global.INSTRUCTION_DICT  = setting["INSTRUCTION_DICT"]
     # Global = setting[""]
@@ -120,6 +121,8 @@ def init_argv():
             Global.GENERATOR = value
         if option == "--gen-argv":
             Global.GEN_ARGV = value
+        if option == "--copy":
+            Global.COPY = True
     change_dir()
     Global.ENBLED_INSTRUCTION = setting[f"ENBLED_INSTRUCTION_P{Global.P}"]
     if(Global.P != 3):

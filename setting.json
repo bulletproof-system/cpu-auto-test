@@ -2,6 +2,7 @@
 	"FILE_PATH" : null,
 	"TEST_NUM" : 10,
 	"DEBUG" : false,
+	"COPY" : false,
 	"OUTPUT_DIR" : "output",
 	"ASM_NAME" : "asm.asm",
 	"CODE_NAME" : "code.txt",

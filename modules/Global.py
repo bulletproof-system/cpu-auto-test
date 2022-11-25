@@ -2,15 +2,16 @@
 Author: ltt
 Date: 2022-10-22 22:17:45
 LastEditors: ltt
-LastEditTime: 2022-11-24 09:52:01
+LastEditTime: 2022-11-25 12:09:31
 FilePath: Global.py
 '''
 
 shortopts = "hf:n:P:"
-longopts = ["help","filename=","number=","debug","output-dir=",
+longopts = ["help","filename=","copy","number=","debug","output-dir=",
             "test=","compiler=","compile-argv=","gen=","gen-argv="]
 FILE_PATH = "FILE_PATH"
 TEST_NUM = 100
+COPY = False
 DEBUG = "DEBUG"
 OUTPUT_DIR = "OUTPUT_DIR"
 ASM_NAME = "ASM_NAME"

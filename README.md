@@ -1,7 +1,8 @@
 # 利用 python 对 Logisim/Verilog 中搭建的 CPU 进行自动化测试
 
 - 这个项目现在支持对 P3~P6 的数据生成以及自动化测试
-- 对于 P7 现在只会生成机器码，如果指定了测试文件夹，会将 `code.txt` 复制到该文件夹中
+- 添加新参数 `--copy`，指定后会将生成的 `code.txt` 文件复制到测试文件夹中以便自行测试，会**覆盖**原来的 `code.txt` 文件
+- 对于 P7 现在可以自动化测试，使用课程组的 Mars，由于没有课程组 Mars 源码，存在诸多限制，见 [P7 限制](##P7 限制)
 - 支持指定汇编文件测试和生成多组数据并测试
 - 内置一个数据可以生成 P3~P6 数据的数据生成器，但是数据不是很强，[生成方案](docs\数据生成方案.md) 
 - 支持外接其他数据生成器，`DataMakers` 文件夹中引用了评论区的一些数据生成器，见[外接数据生成器](docs\外接数据生成器.md)，侵删
@@ -47,6 +48,7 @@
 ### 注意事项
 
 - 使用 `-P` 指定测试的 Project， `--debug` 输出调试信息
+- 使用 `--copy` 将生成的 `code.txt` 文件复制到测试文件夹中
 - 对于 P3 使用 `--test` 指定测试文件，如 `D:\LTT\repository\cscore\CPU\P3\P3.circ`
 - 对于其他 P 使用 `--test` 指定测试文件夹，如 `D:\LTT\repository\cscore\CPU\P6\code`
 - 测试 Logisim 时不会改动源文件，会复制一份到 `output\test.circ` 中再修改该文件的 ROM 以进行测试
@@ -72,9 +74,12 @@
 	python auto_test.py -f example\test_P5.asm --test D:\LTT\repository\cscore\CPU\P5 -P 5 --debug 
 	
 	echo "test P6"
-	python auto_test.py -f example\test_P6.asm --test D:\LTT\repository\cscore\CPU\P6 -P 6 --debug 
+	python auto_test.py -f example\test_P6.asm --test D:\LTT\repository\cscore\CPU\P6 -P 6 --debug --copy
+	
+	echo "test P7"
+	python auto_test.py -f example\test_P6.asm --test D:\LTT\repository\cscore\CPU\P6 -P 7 --debug --copy
 	```
-
+	
 	
 
 #### 生成多组数据并测试
@@ -132,10 +137,17 @@
   |   `-P`   |   P   |     5     |               指定测试的 Project               |
   | `--gen` | GENERATOR | None | 指定数据生成器，不指定将使用内置生成器 |
   | `--gen-argv` | GEN_ARGV | None | 传递给数据生成器的参数 |
+  | `--copy` | COPY | False | 是否将生成的 `code.txt` 文件复制到测试文件夹(对 P3 无效) |
 
 
   - 默认参数在 `setting.json` 中修改
   - ` --filename` 仅可指定 `.asm` 文件
+
+## P7 限制
+
+- 课程组 Mars 不提供源码，~~或者说我没找到~~，在打印 CPU 执行信息时输出汇编代码以及机器码，测试时 `asm` 以及 `instr` 仅会显示 `unknown`
+- 没有中断功能，只能测试异常处理
+- 对于未知指令，由于修改不了 Mars，不能使用 P7 未使用的指令如 `xor` 等指令作为未知指令的测试，因为 Mars 不会把该指令当作未知指令
 
 ## Bug
 
@@ -145,6 +157,11 @@
 - iverilog 与 ISE 中的行为在有些时候会有差异，见 [课程网站](http://cscore.buaa.edu.cn/tutorial/verilog/verilog-6/verilog-6-7/)
 
 ## Update
+
+### `2022-11-25`
+
+- 增加对 P7 的支持
+- 添加新参数 `--copy`
 
 ### `2022-11-22`
 
