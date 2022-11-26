@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-26 20:19:34
 LastEditors: ltt
-LastEditTime: 2022-11-25 12:03:14
+LastEditTime: 2022-11-25 22:53:47
 FilePath: Generator.py
 '''
 import re, json, os, shutil
@@ -513,7 +513,7 @@ def generate_code_P7():
             ans["RegWrite"] = False
             ans["MemWrite"] = True
             ans["MemAddr"] = "0x" + str[12:20]
-            ans["MemData"] = "0x" + str[25:33]
+            ans["MemData"] = "0x" + str[24:33]
         std.append(ans)
     with open(std_path, "w") as std_file:
         std_file.write(json.dumps(std, sort_keys=False, indent=4, separators=(',', ': ')))
