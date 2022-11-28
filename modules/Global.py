@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-22 22:17:45
 LastEditors: ltt
-LastEditTime: 2022-11-25 12:09:31
+LastEditTime: 2022-11-28 16:14:32
 FilePath: Global.py
 '''
 
@@ -12,6 +12,7 @@ longopts = ["help","filename=","copy","number=","debug","output-dir=",
 FILE_PATH = "FILE_PATH"
 TEST_NUM = 100
 COPY = False
+COMPARE = True
 DEBUG = "DEBUG"
 OUTPUT_DIR = "OUTPUT_DIR"
 ASM_NAME = "ASM_NAME"

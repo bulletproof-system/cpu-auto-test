@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-23 10:45:14
 LastEditors: ltt
-LastEditTime: 2022-11-25 12:01:08
+LastEditTime: 2022-11-28 16:17:41
 FilePath: Decode.py
 '''
 
@@ -60,6 +60,7 @@ def load_setting(setting):
     Global.FILE_PATH = setting["FILE_PATH"]
     Global.TEST_NUM = setting["TEST_NUM"]
     Global.DEBUG = (setting["DEBUG"] == "true")
+    Global.COMPARE = (setting["COMPARE"] == "true")
     Global.OUTPUT_DIR = setting["OUTPUT_DIR"]
     Global.ASM_NAME = setting["ASM_NAME"]
     Global.CODE_NAME  = setting["CODE_NAME"]
@@ -126,7 +127,8 @@ def init_argv():
     change_dir()
     Global.ENBLED_INSTRUCTION = setting[f"ENBLED_INSTRUCTION_P{Global.P}"]
     if(Global.P != 3):
-        Global.TEST_FILES = Base.list_files(Global.TEST, ".v") 
+        if(Global.TEST != ""):
+            Global.TEST_FILES = Base.list_files(Global.TEST, ".v") 
     construct_instruction_dict()
     return setting
 
