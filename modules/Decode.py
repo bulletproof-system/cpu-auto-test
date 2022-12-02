@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-23 10:45:14
 LastEditors: ltt
-LastEditTime: 2022-11-28 16:17:41
+LastEditTime: 2022-12-02 14:24:18
 FilePath: Decode.py
 '''
 
@@ -59,8 +59,8 @@ def load_setting(setting):
     """加载配置"""
     Global.FILE_PATH = setting["FILE_PATH"]
     Global.TEST_NUM = setting["TEST_NUM"]
-    Global.DEBUG = (setting["DEBUG"] == "true")
-    Global.COMPARE = (setting["COMPARE"] == "true")
+    Global.DEBUG = setting["DEBUG"]
+    Global.COMPARE = setting["COMPARE"]
     Global.OUTPUT_DIR = setting["OUTPUT_DIR"]
     Global.ASM_NAME = setting["ASM_NAME"]
     Global.CODE_NAME  = setting["CODE_NAME"]
@@ -129,6 +129,8 @@ def init_argv():
     if(Global.P != 3):
         if(Global.TEST != ""):
             Global.TEST_FILES = Base.list_files(Global.TEST, ".v") 
+        else:
+            Global.COMPARE = False
     construct_instruction_dict()
     return setting
 

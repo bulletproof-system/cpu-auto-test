@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-22 22:12:33
 LastEditors: ltt
-LastEditTime: 2022-11-24 09:50:09
+LastEditTime: 2022-12-02 14:26:47
 FilePath: auto_test.py
 '''
 import modules.Base as Base
@@ -38,6 +38,8 @@ def main():
 if __name__ == "__main__":
     Decode.init_argv() # 读取参数
     Base.test_env()  # 测试环境
+    if(Global.COMPARE == False):
+        print("未指定测试文件夹，仅生成标准输出和机器码")
     main() 
  
     

@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-26 20:19:34
 LastEditors: ltt
-LastEditTime: 2022-11-25 22:53:47
+LastEditTime: 2022-12-02 14:25:14
 FilePath: Generator.py
 '''
 import re, json, os, shutil
@@ -125,7 +125,8 @@ def P3():
     """测试 Logisim"""
     Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
     generate_code_P3()
-    generate_out_P3()
+    if(Global.COMPARE):
+        generate_out_P3()
 
 
 def generate_code_P4():
@@ -232,7 +233,8 @@ def P4():
     """测试单周期CPU"""
     Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
     generate_code_P4()
-    generate_out_P4()
+    if(Global.COMPARE):
+        generate_out_P4()
             
 def comp(a, b):
     """排序函数"""
@@ -350,7 +352,8 @@ def P5():
     """测试P5 CPU"""
     Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
     generate_code_P5()
-    generate_out_P5()
+    if(Global.COMPARE):
+        generate_out_P5()
     pass
 
 
@@ -463,7 +466,8 @@ def P6():
     """测试P6 CPU"""
     Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
     generate_code_P6()
-    generate_out_P6()
+    if(Global.COMPARE):
+        generate_out_P6()
 
 def generate_code_P7():
     """生成 P7 机器码和标准输出"""
@@ -575,4 +579,5 @@ def P7():
     """测试P7 CPU"""
     Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
     generate_code_P7()
-    generate_out_P7()
+    if(Global.COMPARE):
+        generate_out_P7()
