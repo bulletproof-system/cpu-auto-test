@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-26 20:19:34
 LastEditors: ltt
-LastEditTime: 2022-12-02 14:25:14
+LastEditTime: 2022-12-02 16:41:58
 FilePath: Generator.py
 '''
 import re, json, os, shutil
@@ -522,8 +522,7 @@ def generate_code_P7():
     with open(std_path, "w") as std_file:
         std_file.write(json.dumps(std, sort_keys=False, indent=4, separators=(',', ': ')))
     if(debug): print("generating code finish (P7)")    
-    return
-    
+    return  
 def generate_out_P7():
     """获取 P7 CPU 输出文件"""
     debug = Global.DEBUG
@@ -574,10 +573,48 @@ def generate_out_P7():
                            indent=4, separators=(',', ': ')))
     if(debug): print("generating out finish (P7)")
     return    
-
 def P7():
     """测试P7 CPU"""
     Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
     generate_code_P7()
     if(Global.COMPARE):
         generate_out_P7()
+
+def generate_code_P8():
+    """生成 P8 机器码和标准输出"""
+    """生成机器码"""
+    asm, mars = Global.ASM_PATH, Global.MARS_P7_PATH
+    code_path, coe_path = Global.CODE_PATH, Global.COE_PATH
+    ktext_path, text_path = os.path.join("temp", "ktext.txt"), os.path.join("temp", "text.txt")
+    debug = Global.DEBUG
+    if(debug): print("generating code (P8)")
+    Base.run(["java", "-jar", mars,"ae1","db", "a","me", "nc", "mc", "CompactDataAtZero", "dump", ".text", "HexText", text_path, asm])
+    Base.run(["java", "-jar", mars,"ae1","db", "a","me", "nc", "mc", "CompactDataAtZero", "dump", "0x4180-0x6ffc", "HexText", ktext_path, asm])
+    with open(text_path, "r") as text_file:
+        text = text_file.readlines()
+    with open(ktext_path, "r") as ktext_file:
+        ktext = ktext_file.readlines()
+    codes = ["00000000\n" for _ in range(4096)]
+    coes =  ["00000000,\n" for _ in range(4096)]
+    for (i, text_code) in zip(range(len(text)), text):
+        codes[i] = text_code
+        coes[i] = text_code[:-1] + ",\n"
+    for (i, ktext_code) in zip(range((0x4180-0x3000)//4, (0x4180-0x3000)//4+len(ktext)), ktext):
+        codes[i] = ktext_code
+        coes[i] = ktext_code[:-1] + ",\n"
+    with open(code_path, "w") as code_file:
+        code_file.write(''.join(codes))
+    coes = ["memory_initialization_radix=16;\n","memory_initialization_vector=\n"]+coes+["00000000;\n"]
+    with open(coe_path, "w") as coe_file:
+        coe_file.write(''.join(coes))
+    if(debug): print("generating code finish(P8)")
+    if(Global.COPY):
+        test_path = Global.TEST
+        shutil.copy(code_path, test_path)
+        shutil.copy(coe_path, test_path)
+    return
+
+def P8():
+    """测试P8 CPU"""
+    Base.run(["copy", Global.FILE_PATH, Global.ASM_PATH])
+    generate_code_P8()

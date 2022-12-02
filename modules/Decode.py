@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-23 10:45:14
 LastEditors: ltt
-LastEditTime: 2022-12-02 14:24:18
+LastEditTime: 2022-12-02 16:37:51
 FilePath: Decode.py
 '''
 
@@ -64,6 +64,7 @@ def load_setting(setting):
     Global.OUTPUT_DIR = setting["OUTPUT_DIR"]
     Global.ASM_NAME = setting["ASM_NAME"]
     Global.CODE_NAME  = setting["CODE_NAME"]
+    Global.COE_NAME  = setting["COE_NAME"]
     Global.RESULT_NAME  = setting["RESULT_NAME"]
     Global.TEST  = setting["TEST"] 
     Global.TEST_CIRC  = setting["TEST_CIRC"]
@@ -161,6 +162,7 @@ def construct_instruction_dict():
 def change_dir():
     Global.ASM_PATH = os.path.join(Global.OUTPUT_DIR,Global.ASM_NAME)
     Global.CODE_PATH = os.path.join(Global.OUTPUT_DIR, Global.CODE_NAME)
+    Global.COE_PATH = os.path.join(Global.OUTPUT_DIR, Global.COE_NAME)
     Global.RESULT_PATH = os.path.join(Global.OUTPUT_DIR, Global.RESULT_NAME)
     Global.STD_PATH = os.path.join(Global.OUTPUT_DIR, Global.STD_NAME)
     Global.OUT_PATH = os.path.join(Global.OUTPUT_DIR, Global.OUT_NAME)
