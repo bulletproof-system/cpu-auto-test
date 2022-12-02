@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-26 20:19:34
 LastEditors: ltt
-LastEditTime: 2022-12-02 16:41:58
+LastEditTime: 2022-12-02 17:10:03
 FilePath: Generator.py
 '''
 import re, json, os, shutil
@@ -604,7 +604,7 @@ def generate_code_P8():
         coes[i] = ktext_code[:-1] + ",\n"
     with open(code_path, "w") as code_file:
         code_file.write(''.join(codes))
-    coes = ["memory_initialization_radix=16;\n","memory_initialization_vector=\n"]+coes+["00000000;\n"]
+    coes = ["memory_initialization_radix=16;\n","memory_initialization_vector=\n"]+coes[:-1]+[coes[-1][:-2]+";\n"]
     with open(coe_path, "w") as coe_file:
         coe_file.write(''.join(coes))
     if(debug): print("generating code finish(P8)")
