@@ -2,7 +2,7 @@
 Author: ltt
 Date: 2022-10-26 20:19:34
 LastEditors: ltt
-LastEditTime: 2022-12-02 17:10:03
+LastEditTime: 2022-12-07 20:43:41
 FilePath: Generator.py
 '''
 import re, json, os, shutil
@@ -612,6 +612,7 @@ def generate_code_P8():
         test_path = Global.TEST
         shutil.copy(code_path, test_path)
         shutil.copy(coe_path, test_path)
+        shutil.copy(Global.FILE_PATH, test_path)
     return
 
 def P8():
