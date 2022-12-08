@@ -167,6 +167,7 @@
 							"addi", "andi", "ori", 
 							"lw", "lb", "lh",
 							"sb", "sh", "sw",
+							"mult", "multu", "div", "divu", "mfhi", "mflo", "mthi", "mtlo",
 							"beq", "bne",
 							"lui", "jal", "jr", "nop"],
 	"ENBLED_INSTRUCTION_P7" : ["add", "sub", "and", "or", "slt", "sltu", "addu", "subu", "sll",
