@@ -48,6 +48,7 @@
 
 ### 注意事项
 
+- 在 setting.json 中的 `ENBLED_INSTRUCTION` 可以修改当前允许使用的指令
 - 使用 `-P` 指定测试的 Project， `--debug` 输出调试信息
 - 使用 `--copy` 将生成的 `code.txt` 文件复制到测试文件夹中
 - 对于 P3 使用 `--test` 指定测试文件，如 `D:\LTT\repository\cscore\CPU\P3\P3.circ`
